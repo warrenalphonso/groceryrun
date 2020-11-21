@@ -1,5 +1,5 @@
 import arcade
-from game import constants
+from game import constants, entity
 
 
 class Window(arcade.Window):
@@ -15,8 +15,7 @@ class Window(arcade.Window):
         self.facing = "right"
         # initiailze player list
         self.player_list = arcade.SpriteList()
-        self.player = arcade.Sprite("assets/fat_man_right.png",
-                                    constants.SPRITE_SCALING_PLAYER)
+        self.player = entity.Entity("hazmat")
         grid_x = 1
         grid_y = 1
         self.player.center_x = constants.SPRITE_SIZE * \
@@ -25,19 +24,12 @@ class Window(arcade.Window):
             grid_y + constants.SPRITE_SIZE / 2
         self.player_list.append(self.player)
 
-        map = arcade.tilemap.read_tmx("assets/map2.tmx")
+        map = arcade.tilemap.read_tmx("assets/map_real.tmx")
         self.platform_list = arcade.tilemap.process_layer(
-            map, "Tile Layer 1", constants.SPRITE_SCALING_TILES)
+            map, "Platform", constants.SPRITE_SCALING_TILES)
 
         # Spatial hashing speeds time to find collision
         self.floor_list = arcade.SpriteList(use_spatial_hash=True)
-        # make ground
-        for x in range(0, 1250, constants.SPRITE_IMAGE_SIZE):
-            floor = arcade.Sprite("assets/fat_man_left.png",
-                                  constants.SPRITE_SCALING_TILES)
-            floor.center_x = x
-            floor.center_y = 32
-            self.floor_list.append(floor)
         self.item_list = arcade.SpriteList(use_spatial_hash=True)
 
         # Create physics
