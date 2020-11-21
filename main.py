@@ -5,8 +5,6 @@ from pyglet.gl import *
 from game import resources, player
 
 # Scale pixel art as per: https://gamedev.stackexchange.com/a/57114
-glEnable(GL_TEXTURE_2D)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
 main_batch = pyglet.graphics.Batch()
 
@@ -31,7 +29,15 @@ def update(dt):
 @window.event 
 def on_draw():
     window.clear()
+    glEnable(GL_TEXTURE_2D)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
     resources.home_background.blit(0,0)
+    resources.money_amount.blit(resources.money_amount.width, height - resources.money_amount.height)
+    resources.toilet_paper_amount.blit(3 / 2 * resources.money_amount.width + resources.toilet_paper_amount.width, height - resources.money_amount.height)
+    resources.pills_amount.blit(50 + 3 / 2 * resources.money_amount.width + resources.toilet_paper_amount.width, height - resources.money_amount.height)
     main_player.draw()
 
 # 120 FPS

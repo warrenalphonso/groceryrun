@@ -37,6 +37,15 @@ class Player(entity.Entity):
 
     def update(self, dt):
         super(Player, self).update(dt)
+        if self.keys["move"]:
+            if self.keys["facing"] == "left":
+                self.vx = -self.speed 
+            else: 
+                self.vx = self.speed
+        else: 
+            self.vx = 0
+        
+
 
         if self.keys["jump"] > jump_time / 2:
             self.image = self.jump
@@ -48,18 +57,15 @@ class Player(entity.Entity):
             self.keys["jump"] -= dt
         else:
             if not self.keys["move"]:
-                self.vx = 0
                 if self.keys["facing"] == "left":
                     self.image = self.stand_left
                 else: 
                     self.image = self.stand_right
             else:
                 if self.keys["facing"] == "left":
-                    self.vx = -self.speed 
                     if self.image != self.walking_left: # Must do this because can't repeatedly set walking animation or it'll be still
                         self.image = self.walking_left
-                elif self.keys["facing"] == "right": 
-                    self.vx = self.speed
+                else: 
                     if self.image != self.walking_right: # Same as above
                         self.image = self.walking_right
             self.vy = 0
