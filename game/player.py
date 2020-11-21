@@ -1,25 +1,26 @@
 import pyglet
 from pyglet.window import key
 
-from . import entity, resources 
+from . import entity, resources
 
 jump_time = 1
+
 
 class Player(entity.Entity):
     def __init__(self, *args, **kwargs):
         self.stand_right = resources.fat_man_right
         self.stand_left = resources.fat_man_left
         super().__init__(img=self.stand_right, *args, **kwargs)
-        self.keys = { "facing": "right", "move": False, "jump": 0 }
+        self.keys = {"facing": "right", "move": False, "jump": 0}
         self.speed = 400
         self.jump = resources.fat_man_jump
-        # Walking animations 
+        # Walking animations
         self.walking_left = resources.fat_man_walking_left
         self.walking_right = resources.fat_man_walking_right
-        # Resources 
+        # Resources
         # self.money = 0
-        self.toilet_paper = 0 
-        self.pills = 0 
+        self.toilet_paper = 0
+        self.pills = 0
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.LEFT or symbol == key.A:
@@ -43,15 +44,16 @@ class Player(entity.Entity):
         super(Player, self).update(dt)
         if self.keys["move"]:
             if self.keys["facing"] == "left":
-                self.vx = -self.speed 
-            else: 
+                self.vx = -self.speed
+            else:
                 self.vx = self.speed
-        else: 
+        else:
             self.vx = 0
 
         if self.keys["jump"] > jump_time / 2:
             self.image = self.jump
-            self.vy = self.speed * ((self.keys["jump"] - jump_time / 2) / (jump_time / 2))**2
+            self.vy = self.speed * \
+                ((self.keys["jump"] - jump_time / 2) / (jump_time / 2))**2
             self.keys["jump"] -= dt
         elif self.keys["jump"] > 0:
             self.image = self.jump
@@ -61,15 +63,16 @@ class Player(entity.Entity):
             if not self.keys["move"]:
                 if self.keys["facing"] == "left":
                     self.image = self.stand_left
-                else: 
+                else:
                     self.image = self.stand_right
             else:
                 if self.keys["facing"] == "left":
-                    if self.image != self.walking_left: # Must do this because can't repeatedly set walking animation or it'll be still
+                    # Must do this because can't repeatedly set walking animation or it'll be still
+                    if self.image != self.walking_left:
                         self.image = self.walking_left
-                else: 
-                    if self.image != self.walking_right: # Same as above
+                else:
+                    if self.image != self.walking_right:  # Same as above
                         self.image = self.walking_right
             self.vy = 0
-            self.y = 300 # Just in case
+            self.y = 300  # Just in case
             self.keys["jump"] = 0
