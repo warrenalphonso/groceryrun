@@ -8,7 +8,7 @@ from game import resources, player
 glEnable(GL_TEXTURE_2D)
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
-speed = 3
+main_batch = pyglet.graphics.Batch()
 
 # home_background.png is 2457 x 1397
 width = 2457 // 2
@@ -17,7 +17,7 @@ window = pyglet.window.Window(width, height)
 resources.home_background.width = width 
 resources.home_background.height = height
 
-main_player = player.Player(0, width, x=400, y=300)
+main_player = player.Player(0, width, x=400, y=300, batch=main_batch)
 window.push_handlers(main_player)
 
 # Use this to accomodate holding down keys
