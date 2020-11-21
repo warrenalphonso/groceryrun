@@ -16,6 +16,10 @@ class Player(entity.Entity):
         # Walking animations 
         self.walking_left = resources.fat_man_walking_left
         self.walking_right = resources.fat_man_walking_right
+        # Resources 
+        # self.money = 0
+        self.toilet_paper = 0 
+        self.pills = 0 
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.LEFT or symbol == key.A:
@@ -44,8 +48,6 @@ class Player(entity.Entity):
                 self.vx = self.speed
         else: 
             self.vx = 0
-        
-
 
         if self.keys["jump"] > jump_time / 2:
             self.image = self.jump
