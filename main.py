@@ -1,3 +1,4 @@
+from game.constants import WIDTH
 import pyglet
 from pyglet.window import key
 from pyglet.gl import *
@@ -19,7 +20,7 @@ space.add(main_player.body, main_player.shape)
 
 # TODO: Add barriers on side of map
 # Floor
-floor = pymunk.Segment(space.static_body, (0, 100), (constants.WIDTH, 100), 0)
+floor = pymunk.Segment(space.static_body, (0, 100), (constants.WIDTH, 100), 3)
 space.add(floor)
 
 
@@ -38,9 +39,11 @@ def on_draw():
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     resources.home_background.blit(0, 0)
-    draw.draw_resource_amounts(main_player.toilet_paper, main_player.pills)
     resources.TV.blit(constants.WIDTH - 300, constants.HEIGHT - 200)
     resources.news_phone.blit(constants.WIDTH - 300, constants.HEIGHT - 200)
+
+    draw.draw_resource_amounts(main_player.toilet_paper, main_player.pills)
+
     main_batch.draw()
 
 

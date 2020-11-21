@@ -8,18 +8,16 @@ from . import constants
 class Entity(pyglet.sprite.Sprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.vx = 0.0
-        self.vy = 0.0
         self.min_x = 0
         self.max_x = constants.WIDTH
 
     def check_bounds(self):
-        if self.x + self.width // 2 > self.max_x:
-            self.x = self.max_x - self.width // 2
-        elif self.x - self.width // 2 < self.min_x:
-            self.x = self.min_x + self.width // 2
+        if self.shape.body.position.x + self.width // 2 > self.max_x:
+            self.shape.body.position = (self.max_x - self.width // 2, self.y)
+        elif self.shape.body.position.x - self.width // 2 < self.min_x:
+            self.shape.body.position = (self.min_x + self.width // 2, self.y)
 
     def update(self, dt):
-        self.x += self.vx * dt
-        self.y += self.vy * dt
+        self.x = self.shape.body.position.x
+        self.y = self.shape.body.position.y
         self.check_bounds()
