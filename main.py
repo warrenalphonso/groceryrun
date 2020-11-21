@@ -19,6 +19,7 @@ class Window(arcade.Window):
         self.view_left = 0
         self.hits_left = 4
         self.score = 0
+        self.immune_for = 3
         # initiailze player list
         self.player_list = arcade.SpriteList()
         self.player = entity.Entity("hazmat")
@@ -36,7 +37,7 @@ class Window(arcade.Window):
 
         # Spatial hashing speeds time to find collision
         self.item_list = arcade.SpriteList()
-        for x in range(40, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
+        for x in range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
             TP = arcade.Sprite(
                 "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
             TP.center_x = x
@@ -98,6 +99,10 @@ class Window(arcade.Window):
             self.right_pressed = False
 
     def on_update(self, dt):
+        if self.immune_for > 0:
+            self.immune_for -= dt
+        else:
+            self.immune_for = 0
         # DEALING WITH MOVEMENT
         self.enemy_list.update()
         for enemy in self.enemy_list:
@@ -167,9 +172,19 @@ class Window(arcade.Window):
             arcade.set_viewport(
                 self.view_left, constants.WIDTH + self.view_left, 0, constants.HEIGHT)
         if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
-            print("COLLIDED")
             # TODO: Collisions change suit
-            # self.hits_left -
+            if self.immune_for <= 0:
+                print("COLLIDED")
+                self.hits_left -= 1
+                self.player.remove_from_sprite_lists()
+                # player = entity.Entity("hazmat")
+                # grid_x = 1
+                # grid_y = 1
+                # self.player.center_x = constants.SPRITE_SIZE * \
+                #     grid_x + constants.SPRITE_SIZE / 2
+                # self.player.center_y = constants.SPRITE_SIZE * \
+                #     grid_y + constants.SPRITE_SIZE / 2
+                # self.player_list.append(player)
 
     def on_draw(self):
         arcade.start_render()

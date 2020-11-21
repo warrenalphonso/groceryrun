@@ -19,11 +19,11 @@ class Entity(arcade.Sprite):
         elif name == "main_char_gas":
             partial_path += "main_char_gas_walking"
             self.char = True
-        elif name == "fatman":
-            partial_path += "fatman_walking"
-            self.char = False
         elif name == "hazmat":
             partial_path += "hazmat_walking"
+            self.char = True
+        elif name == "fatman":
+            partial_path += "fatman_walking"
             self.char = False
         elif name == "karen":
             partial_path += "karen_walking"
@@ -101,18 +101,6 @@ class Entity(arcade.Sprite):
                 self.texture = self.walk_right[self.walk_curr_index][0]
 
     def move_enemy(self):
-        # # Facing
-        # if dx < -constants.ZONE_NO_ANIMATION and self.facing == "right":
-        #     self.facing = "left"
-        #     self.walk_curr_index = 0
-        # elif dx > constants.ZONE_NO_ANIMATION and self.facing == "left":
-        #     self.facing = "right"
-        #     self.walk_curr_index = 0
-
-        # grounded = physics_engine.is_on_ground(self)
-        # self.distance_travelled_with_texture += dx
-
-        # self.walk_curr_index = 0
         if self.walk_curr_index >= len(self.walk_right):
             self.walk_curr_index = 0
         if self.facing == "left":
