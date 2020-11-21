@@ -1,3 +1,4 @@
+from game import constants
 import pyglet
 from pyglet.window import key
 import pymunk
@@ -30,6 +31,8 @@ class Player(entity.Entity):
         # self.money = 0
         self.toilet_paper = 0
         self.pills = 0
+        # Grocery
+        self.grocery = False
 
     def on_key_press(self, symbol, modifiers):
         if symbol == key.LEFT or symbol == key.A:
@@ -42,6 +45,11 @@ class Player(entity.Entity):
             self.image = self.walking_right
         elif (symbol == key.UP or symbol == key.W) and self.keys["jump"] == 0:
             self.keys["jump"] = jump_time
+        elif symbol == key.SPACE:  # Only let them go if they're by the door or exit...
+            if not self.grocery and self.x < constants.DOOR_MAX_X:
+                self.grocery = True
+            elif self.grocery:
+                self.grocery = False
 
     def on_key_release(self, symbol, modifiers):
         if (symbol == key.LEFT or symbol == key.A) and self.keys["facing"] == "left":

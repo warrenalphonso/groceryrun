@@ -1,6 +1,9 @@
 # Window size
 WIDTH = 2457 // 2
 HEIGHT = 1397 // 2
+DOOR_MAX_X = 200
+
+FONT = "Times New Roman"
 
 # Defaults for sprites
 FRICTION = 0.1

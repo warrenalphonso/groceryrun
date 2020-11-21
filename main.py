@@ -18,15 +18,35 @@ main_player = player.Player(x=400, y=300, batch=main_batch)
 window.push_handlers(main_player)
 space.add(main_player.body, main_player.shape)
 
-# TODO: Add barriers on side of map
 # Floor
 floor = pymunk.Segment(space.static_body, (0, 100), (constants.WIDTH, 100), 3)
 space.add(floor)
+
+# Door
+label = pyglet.text.Label("",
+                          font_name=constants.FONT,
+                          font_size=34, color=(0, 0, 0, 250),
+                          x=window.width//2, y=80,
+                          anchor_x='center', anchor_y='center')
 
 
 def update(dt):
     main_player.update(dt)
     space.step(dt)
+    # Check if player is at door, then display text
+    if main_player.x < constants.DOOR_MAX_X:
+        label.text = "To go on a grocery run, press SPACE"
+    else:
+        label.text = ""
+    # Check if player wants to load grocery
+    if main_player.grocery:
+        print("GROCERY")
+        resources.home_background.image = pyglet.resource.image(
+            "background_room_new.png")
+        window.clear()
+        resources.home_background.blit(0, 0)
+    else:
+        print("HOME")
 
 
 @window.event
@@ -43,6 +63,8 @@ def on_draw():
     resources.news_phone.blit(constants.WIDTH - 300, constants.HEIGHT - 200)
 
     draw.draw_resource_amounts(main_player.toilet_paper, main_player.pills)
+
+    label.draw()
 
     main_batch.draw()
 
