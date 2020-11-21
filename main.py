@@ -1,6 +1,7 @@
 import pyglet
 from pyglet.window import key
 from pyglet.gl import *
+import pymunk
 
 from game import resources, player, draw
 
@@ -13,22 +14,27 @@ window = pyglet.window.Window(width, height)
 resources.home_background.width = width
 resources.home_background.height = height
 
+space = pymunk.Space()
+space.gravity = (0.0, -1000.)
+
 main_player = player.Player(0, width, x=400, y=300, batch=main_batch)
 window.push_handlers(main_player)
+space.add(main_player.body, main_player.shape)
 
-# Use this to accomodate holding down keys
-pressed_keys = []
-# Which way the player is facing
-facingRight = True
+# TODO: Add barriers on side of map
+# Floor
+floor = pymunk.Segment(space.static_body, (0, 100), (width, 100), 0)
+space.add(floor)
 
 
 def update(dt):
     main_player.update(dt)
+    space.step(dt)
 
 
 @window.event
 def on_draw():
-    window.cleasr()
+    window.clear()
     # Scale pixel art as per: https://gamedev.stackexchange.com/a/57114
     glEnable(GL_TEXTURE_2D)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)

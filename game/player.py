@@ -1,5 +1,6 @@
 import pyglet
 from pyglet.window import key
+import pymunk
 
 from . import entity, resources
 
@@ -8,6 +9,14 @@ jump_time = 1
 
 class Player(entity.Entity):
     def __init__(self, *args, **kwargs):
+        # Trying to get Pymunk working: https://stackoverflow.com/q/11370652/13697995
+        mass = 91
+        radius = 14
+        inertia = pymunk.moment_for_circle(mass, 0, radius)
+        self.body = pymunk.Body(mass, inertia)
+        self.body.position = 300, 400
+        self.shape = pymunk.Circle(self.body, radius)
+
         self.stand_right = resources.fat_man_right
         self.stand_left = resources.fat_man_left
         super().__init__(img=self.stand_right, *args, **kwargs)
@@ -42,22 +51,25 @@ class Player(entity.Entity):
 
     def update(self, dt):
         super(Player, self).update(dt)
+        self.x = self.shape.body.position.x
+        self.y = self.shape.body.position.y
         if self.keys["move"]:
             if self.keys["facing"] == "left":
-                self.vx = -self.speed
+                self.body.velocity = (-self.speed, self.body.velocity.y)
             else:
-                self.vx = self.speed
+                self.body.velocity = (self.speed, self.body.velocity.y)
         else:
-            self.vx = 0
+            self.body.velocity = (0, self.body.velocity.y)
 
         if self.keys["jump"] > jump_time / 2:
             self.image = self.jump
-            self.vy = self.speed * \
-                ((self.keys["jump"] - jump_time / 2) / (jump_time / 2))**2
+            self.body.velocity = (self.body.velocity.x, self.speed *
+                                  ((self.keys["jump"] - jump_time / 2) / (jump_time / 2))**2)
             self.keys["jump"] -= dt
         elif self.keys["jump"] > 0:
             self.image = self.jump
-            self.vy = -self.speed * (self.keys["jump"] / (jump_time / 2))**2
+            self.body.velocity.y = -self.speed * \
+                (self.keys["jump"] / (jump_time / 2))**2
             self.keys["jump"] -= dt
         else:
             if not self.keys["move"]:
@@ -73,6 +85,4 @@ class Player(entity.Entity):
                 else:
                     if self.image != self.walking_right:  # Same as above
                         self.image = self.walking_right
-            self.vy = 0
-            self.y = 300  # Just in case
             self.keys["jump"] = 0
