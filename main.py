@@ -6,10 +6,12 @@ class Window(arcade.Window):
     def __init__(self):
         # Build window
         super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
-        arcade.set_background_color(arcade.color.AMAZON)
+        # arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
+        self.background = arcade.load_texture(
+            "assets/background_final.png")
         self.left_pressed = False
         self.right_pressed = False
         self.facing = "right"
@@ -102,11 +104,11 @@ class Window(arcade.Window):
         # DEALING WITH VIEWPORT
         changed_viewport = False
         left_boundary = self.view_left + constants.LEFT_VIEWPORT_MARGIN
-        if self.player.center_x < left_boundary:
+        if self.player.center_x < left_boundary and self.view_left - (left_boundary - self.player.center_x) > 0:
             self.view_left -= left_boundary - self.player.center_x
             changed_viewport = True
         right_boundary = self.view_left + constants.WIDTH - constants.RIGHT_VIEWPORT_MARGIN
-        if self.player.center_x > right_boundary:
+        if self.player.center_x > right_boundary and self.view_left + (self.player.center_x - right_boundary) + constants.WIDTH < constants.LEVEL_WIDTH:
             self.view_left += self.player.center_x - right_boundary
             changed_viewport = True
         if changed_viewport:
@@ -117,6 +119,10 @@ class Window(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(
+            0, 0,
+            constants.LEVEL_WIDTH, constants.HEIGHT,  # 100 x 9 level
+            self.background)
         self.floor_list.draw()
         self.platform_list.draw()
         self.item_list.draw()
