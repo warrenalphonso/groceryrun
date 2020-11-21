@@ -12,6 +12,7 @@ class Window(arcade.Window):
         """ Set up the game here. Call this function to restart the game. """
         self.left_pressed = False
         self.right_pressed = False
+        self.facing = "right"
         # initiailze player list
         self.player_list = arcade.SpriteList()
         self.player = arcade.Sprite("assets/fat_man_right.png",
