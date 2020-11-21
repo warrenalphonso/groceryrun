@@ -1,74 +1,122 @@
-from game.constants import WIDTH
-import pyglet
-from pyglet.window import key
-from pyglet.gl import *
-import pymunk
-
-from game import resources, player, draw, constants
-
-main_batch = pyglet.graphics.Batch()
-
-# home_background.png is 2457 x 1397
-window = pyglet.window.Window(constants.WIDTH, constants.HEIGHT)
-
-space = pymunk.Space()
-space.gravity = (0.0, -1000.)
-
-main_player = player.Player(x=400, y=300, batch=main_batch)
-window.push_handlers(main_player)
-space.add(main_player.body, main_player.shape)
-
-# Floor
-floor = pymunk.Segment(space.static_body, (0, 100), (constants.WIDTH, 100), 3)
-space.add(floor)
-
-# Door
-label = pyglet.text.Label("",
-                          font_name=constants.FONT,
-                          font_size=34, color=(0, 0, 0, 250),
-                          x=window.width//2, y=80,
-                          anchor_x='center', anchor_y='center')
+import arcade
+from game import constants
 
 
-def update(dt):
-    main_player.update(dt)
-    space.step(dt)
-    # Check if player is at door, then display text
-    if main_player.x < constants.DOOR_MAX_X:
-        label.text = "To go on a grocery run, press SPACE"
-    else:
-        label.text = ""
-    # Check if player wants to load grocery
-    if main_player.grocery:
-        print("GROCERY")
-        resources.home_background.image = pyglet.resource.image(
-            "background_room_new.png")
-        window.clear()
-        resources.home_background.blit(0, 0)
-    else:
-        print("HOME")
+class Window(arcade.Window):
+    def __init__(self):
+        # Build window
+        super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
+        arcade.set_background_color(arcade.color.AMAZON)
+
+    def setup(self):
+        """ Set up the game here. Call this function to restart the game. """
+        self.left_pressed = False
+        self.right_pressed = False
+        # initiailze player list
+        self.player_list = arcade.SpriteList()
+        self.player = arcade.Sprite("assets/fat_man_right.png",
+                                    constants.SPRITE_SCALING_PLAYER)
+        grid_x = 1
+        grid_y = 1
+        self.player.center_x = constants.SPRITE_SIZE * \
+            grid_x + constants.SPRITE_SIZE / 2
+        self.player.center_y = constants.SPRITE_SIZE * \
+            grid_y + constants.SPRITE_SIZE / 2
+        self.player_list.append(self.player)
+
+        map = arcade.tilemap.read_tmx("assets/map2.tmx")
+        self.platform_list = arcade.tilemap.process_layer(
+            map, "Tile Layer 1", constants.SPRITE_SCALING_TILES)
+
+        # Spatial hashing speeds time to find collision
+        self.floor_list = arcade.SpriteList(use_spatial_hash=True)
+        # make ground
+        for x in range(0, 1250, constants.SPRITE_IMAGE_SIZE):
+            floor = arcade.Sprite("assets/fat_man_left.png",
+                                  constants.SPRITE_SCALING_TILES)
+            floor.center_x = x
+            floor.center_y = 32
+            self.floor_list.append(floor)
+        self.item_list = arcade.SpriteList(use_spatial_hash=True)
+
+        # Create physics
+        self.physics_engine = arcade.PymunkPhysicsEngine(
+            damping=constants.DEFAULT_DAMPING, gravity=constants.GRAVITY)
+        self.physics_engine.add_sprite(self.player,
+                                       friction=constants.PLAYER_FRICTOIN,
+                                       mass=constants.PLAYER_MASS,
+                                       moment=arcade.PymunkPhysicsEngine.MOMENT_INF, collision_type="player",
+                                       max_horizontal_velocity=constants.PLAYER_MAX_VX,
+                                       max_vertical_velocity=constants.PLAYER_MAX_VY)
+
+        self.physics_engine.add_sprite_list(self.platform_list,
+                                            friction=constants.FLOOR_FRICTION,
+                                            collision_type="floor",
+                                            body_type=arcade.PymunkPhysicsEngine.STATIC)
+
+        self.physics_engine.add_sprite_list(self.floor_list,
+                                            friction=constants.FLOOR_FRICTION,
+                                            collision_type="wall",
+                                            body_type=arcade.PymunkPhysicsEngine.STATIC)
+
+        self.physics_engine.add_sprite_list(self.item_list,
+                                            friction=constants.DYNAMIC_ITEM_FRICTION,
+                                            collision_type="item")
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.LEFT or key == arcade.key.A:
+            self.left_pressed = True
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.right_pressed = True
+        elif key == arcade.key.UP or key == arcade.key.W:
+            if self.physics_engine.is_on_ground(self.player):
+                f = (0, constants.PLAYER_JUMP_IMPULSE)
+                self.physics_engine.apply_impulse(self.player, f)
+
+    def on_key_release(self, key, modifiers):
+        if key == arcade.key.LEFT or key == arcade.key.A:
+            self.left_pressed = False
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.right_pressed = False
+
+    def on_update(self, dt):
+        grounded = self.physics_engine.is_on_ground(self.player)
+        if self.left_pressed and not self.right_pressed:
+            if grounded:
+                # Might have vertical movement, but force APPLIED is zero
+                f = (-constants.PLAYER_MOVE_FORCE_GROUND, 0)
+            else:
+                f = (-constants.PLAYER_MOVE_FORCE_AIR, 0)
+            self.physics_engine.set_friction(self.player, 0)
+            self.physics_engine.apply_force(self.player, f)
+
+        elif self.right_pressed and not self.left_pressed:
+            if grounded:
+                # Might have vertical movement, but force APPLIED is zero
+                f = (constants.PLAYER_MOVE_FORCE_GROUND, 0)
+            else:
+                f = (constants.PLAYER_MOVE_FORCE_AIR, 0)
+            self.physics_engine.set_friction(self.player, 0)
+            self.physics_engine.apply_force(self.player, f)
+        else:
+            # Stuck while holding both down
+            self.physics_engine.set_friction(self.player, 1)
+
+        self.physics_engine.step()
+
+    def on_draw(self):
+        arcade.start_render()
+        self.floor_list.draw()
+        self.platform_list.draw()
+        self.item_list.draw()
+        self.player_list.draw()
 
 
-@window.event
-def on_draw():
-    window.clear()
-    # Scale pixel art as per: https://gamedev.stackexchange.com/a/57114
-    glEnable(GL_TEXTURE_2D)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-    glEnable(GL_BLEND)  # From https://stackoverflow.com/a/46048254/13697995
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-    resources.home_background.blit(0, 0)
-    resources.TV.blit(constants.WIDTH - 300, constants.HEIGHT - 200)
-    resources.news_phone.blit(constants.WIDTH - 300, constants.HEIGHT - 200)
-
-    draw.draw_resource_amounts(main_player.toilet_paper, main_player.pills)
-
-    label.draw()
-
-    main_batch.draw()
+def main():
+    window = Window()
+    window.setup()
+    arcade.run()
 
 
-# 120 FPS
-pyglet.clock.schedule_interval(update, 1 / 120.0)
-pyglet.app.run()
+if __name__ == "__main__":
+    main()
