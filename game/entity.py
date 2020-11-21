@@ -12,19 +12,29 @@ class Entity(arcade.Sprite):
         partial_path = "assets/"
         if name == "main_char":
             partial_path += "main_char_walking"
+            self.char = True
         elif name == "main_char_mask":
             partial_path += "main_char_mask_walking"
+            self.char = True
         elif name == "main_char_gas":
             partial_path += "main_char_gas_walking"
+            self.char = True
         elif name == "fatman":
             partial_path += "fatman_walking"
+            self.char = False
         elif name == "hazmat":
             partial_path += "hazmat_walking"
+            self.char = False
         elif name == "karen":
             partial_path += "karen_walking"
+            self.char = False
         else:
             raise Exception("Name provided for entity didn't match: " + name)
-        self.scale = constants.SPRITE_SCALING_PLAYER
+        if self.char:
+            self.scale = constants.SPRITE_SCALING_PLAYER
+        else:
+            self.scale = constants.SPRITE_SCALING_TILES
+        self.num = 0
         self.stand_right = arcade.load_texture_pair(
             f"{partial_path}_right/1.png")
         self.stand_left = arcade.load_texture_pair(
@@ -89,3 +99,23 @@ class Entity(arcade.Sprite):
                 self.texture = self.walk_left[self.walk_curr_index][0]
             elif self.facing == "right":
                 self.texture = self.walk_right[self.walk_curr_index][0]
+
+    def move_enemy(self):
+        # # Facing
+        # if dx < -constants.ZONE_NO_ANIMATION and self.facing == "right":
+        #     self.facing = "left"
+        #     self.walk_curr_index = 0
+        # elif dx > constants.ZONE_NO_ANIMATION and self.facing == "left":
+        #     self.facing = "right"
+        #     self.walk_curr_index = 0
+
+        # grounded = physics_engine.is_on_ground(self)
+        # self.distance_travelled_with_texture += dx
+
+        # self.walk_curr_index = 0
+        if self.walk_curr_index >= len(self.walk_right):
+            self.walk_curr_index = 0
+        if self.facing == "left":
+            self.texture = self.walk_left[self.walk_curr_index][0]
+        elif self.facing == "right":
+            self.texture = self.walk_right[self.walk_curr_index][0]

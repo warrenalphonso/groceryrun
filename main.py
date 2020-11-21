@@ -1,3 +1,4 @@
+from game.constants import SPRITE_SCALING_TILES
 import arcade
 from game import constants, entity
 
@@ -16,6 +17,8 @@ class Window(arcade.Window):
         self.right_pressed = False
         self.facing = "right"
         self.view_left = 0
+        self.hits_left = 4
+        self.score = 0
         # initiailze player list
         self.player_list = arcade.SpriteList()
         self.player = entity.Entity("hazmat")
@@ -32,8 +35,32 @@ class Window(arcade.Window):
             map, "Platform", constants.SPRITE_SCALING_TILES)
 
         # Spatial hashing speeds time to find collision
-        self.floor_list = arcade.SpriteList(use_spatial_hash=True)
-        self.item_list = arcade.SpriteList(use_spatial_hash=True)
+        self.item_list = arcade.SpriteList()
+        for x in range(40, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
+            TP = arcade.Sprite(
+                "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+            TP.center_x = x
+            TP.center_y = 200
+            self.item_list.append(TP)
+
+        # ENEMY
+        self.enemy_list = arcade.SpriteList()
+        enemy1 = entity.Entity("fatman")
+        enemy1.bottom = constants.SPRITE_SIZE
+        enemy1.left = 6 * constants.SPRITE_SIZE
+        enemy1.boundary_left = enemy1.left - 300
+        enemy1.boundary_right = enemy1.left + 250
+        enemy1.change_x = 10
+        self.enemy_list.append(enemy1)
+
+        # for x in range(40, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
+        #     enemy = entity.Entity("fatman")
+        #     enemy.bottom = constants.SPRITE_SIZE
+        #     enemy.left = x
+        #     enemy.boundary_left = x - 300
+        #     enemy.boundary_right = x + 400
+        #     enemy.change_x = 2
+        #     self.enemy_list.append(enemy)
 
         # Create physics
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -48,11 +75,6 @@ class Window(arcade.Window):
         self.physics_engine.add_sprite_list(self.platform_list,
                                             friction=constants.FLOOR_FRICTION,
                                             collision_type="floor",
-                                            body_type=arcade.PymunkPhysicsEngine.STATIC)
-
-        self.physics_engine.add_sprite_list(self.floor_list,
-                                            friction=constants.FLOOR_FRICTION,
-                                            collision_type="wall",
                                             body_type=arcade.PymunkPhysicsEngine.STATIC)
 
         self.physics_engine.add_sprite_list(self.item_list,
@@ -77,6 +99,34 @@ class Window(arcade.Window):
 
     def on_update(self, dt):
         # DEALING WITH MOVEMENT
+        self.enemy_list.update()
+        for enemy in self.enemy_list:
+            # If the enemy hit the left boundary, reverse
+            if enemy.boundary_left is not None and enemy.left < enemy.boundary_left:
+                enemy.facing = "right"
+                enemy.walk_curr_index = 0
+                enemy.change_x *= -1
+                enemy.move_enemy()
+            # If the enemy hit the right boundary, reverse
+            elif enemy.boundary_right is not None and enemy.right > enemy.boundary_right:
+                enemy.facing = "left"
+                enemy.walk_curr_index = 0
+                enemy.change_x *= -1
+                enemy.move_enemy()
+            else:
+                enemy.num += 1
+                if enemy.num % 10 == 0:
+                    enemy.walk_curr_index += 1
+                enemy.move_enemy()
+
+        # TP
+        TP_hit_list = arcade.check_for_collision_with_list(
+            self.player, self.item_list)
+        for TP in TP_hit_list:
+            print("GOT ONE")
+            TP.remove_from_sprite_lists()
+            self.score += 1
+
         grounded = self.physics_engine.is_on_ground(self.player)
         if self.left_pressed and not self.right_pressed:
             if grounded:
@@ -116,6 +166,10 @@ class Window(arcade.Window):
             # Scroll
             arcade.set_viewport(
                 self.view_left, constants.WIDTH + self.view_left, 0, constants.HEIGHT)
+        if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
+            print("COLLIDED")
+            # TODO: Collisions change suit
+            # self.hits_left -
 
     def on_draw(self):
         arcade.start_render()
@@ -123,10 +177,10 @@ class Window(arcade.Window):
             0, 0,
             constants.LEVEL_WIDTH, constants.HEIGHT,  # 100 x 9 level
             self.background)
-        self.floor_list.draw()
         self.platform_list.draw()
-        self.item_list.draw()
+        self.enemy_list.draw()
         self.player_list.draw()
+        self.item_list.draw()
 
 
 def main():
