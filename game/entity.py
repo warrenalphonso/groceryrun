@@ -2,14 +2,16 @@
 # inherit from this. Entities are sprites.
 import pyglet
 
+from . import constants
+
 
 class Entity(pyglet.sprite.Sprite):
-    def __init__(self, min_x, max_x, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.vx = 0.0
         self.vy = 0.0
-        self.min_x = min_x
-        self.max_x = max_x
+        self.min_x = 0
+        self.max_x = constants.WIDTH
 
     def check_bounds(self):
         if self.x + self.width // 2 > self.max_x:

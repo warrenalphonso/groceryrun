@@ -3,27 +3,23 @@ from pyglet.window import key
 from pyglet.gl import *
 import pymunk
 
-from game import resources, player, draw
+from game import resources, player, draw, constants
 
 main_batch = pyglet.graphics.Batch()
 
 # home_background.png is 2457 x 1397
-width = 2457 // 2
-height = 1397 // 2
-window = pyglet.window.Window(width, height)
-resources.home_background.width = width
-resources.home_background.height = height
+window = pyglet.window.Window(constants.WIDTH, constants.HEIGHT)
 
 space = pymunk.Space()
 space.gravity = (0.0, -1000.)
 
-main_player = player.Player(0, width, x=400, y=300, batch=main_batch)
+main_player = player.Player(x=400, y=300, batch=main_batch)
 window.push_handlers(main_player)
 space.add(main_player.body, main_player.shape)
 
 # TODO: Add barriers on side of map
 # Floor
-floor = pymunk.Segment(space.static_body, (0, 100), (width, 100), 0)
+floor = pymunk.Segment(space.static_body, (0, 100), (constants.WIDTH, 100), 0)
 space.add(floor)
 
 
@@ -42,10 +38,9 @@ def on_draw():
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     resources.home_background.blit(0, 0)
-    draw.draw_resource_amounts(
-        height, main_player.toilet_paper, main_player.pills)
-    resources.TV.blit(width - 300, height - 200)
-    resources.news_phone.blit(width - 300, height - 200)
+    draw.draw_resource_amounts(main_player.toilet_paper, main_player.pills)
+    resources.TV.blit(constants.WIDTH - 300, constants.HEIGHT - 200)
+    resources.news_phone.blit(constants.WIDTH - 300, constants.HEIGHT - 200)
     main_batch.draw()
 
 

@@ -1,7 +1,15 @@
 import pyglet
+
+from . import constants
+
 # Set resource path to assets/ - this is relative to main.py, NOT game/resources.py
 pyglet.resource.path = ['assets']
 pyglet.resource.reindex()
+
+
+home_background = pyglet.resource.image("home_background.png")
+home_background.width = constants.WIDTH
+home_background.height = constants.HEIGHT
 
 
 def center(im):
@@ -9,8 +17,6 @@ def center(im):
     im.anchor_x = im.width // 2
     im.anchor_y = im.height // 2
 
-
-home_background = pyglet.resource.image("home_background.png")
 
 # AMOUNTS
 
