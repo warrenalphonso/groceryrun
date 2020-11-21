@@ -30,7 +30,33 @@ center(pills_amount)
 
 ### TV 
 
-# TV = pyglet.resource.image("tv/TV")
+# 124 x 69
+TV = pyglet.resource.image("tv/TV.png")
+TV.width = 300 
+TV.height = 69 / 124 * TV.width 
+center(TV)
+
+# 128 x 73, but make it same as above 
+TV_highlight = pyglet.resource.image("tv/TV_highlight.png")
+TV_highlight.width = TV.width 
+TV_highlight.height = TV.height 
+center(TV_highlight)
+
+# 118 x 60 
+news_phone = pyglet.resource.image("tv/news_phone.png")
+news_phone.width = 118 / 124 * TV.width 
+news_phone.height = 60 / 69 * TV.height 
+center(news_phone)
+
+news_stimulus = pyglet.resource.image("tv/news_stimulus.png")
+news_stimulus.width = news_phone.width
+news_stimulus.height = news_phone.height 
+center(news_stimulus)
+
+news_virus = pyglet.resource.image("tv/news_virus.png")
+news_virus.width = news_phone.width 
+news_virus.height = news_phone.height
+center(news_virus)
 
 ### ENTITIES 
 

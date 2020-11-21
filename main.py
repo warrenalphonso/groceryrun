@@ -34,6 +34,8 @@ def on_draw():
 
     resources.home_background.blit(0,0)
     draw.draw_resource_amounts(height, main_player.toilet_paper, main_player.pills)
+    resources.TV.blit(width - 300, height - 200)
+    resources.news_phone.blit(width - 300, height - 200)
     main_player.draw()
 
 # 120 FPS
