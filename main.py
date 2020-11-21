@@ -36,7 +36,7 @@ def on_draw():
     draw.draw_resource_amounts(height, main_player.toilet_paper, main_player.pills)
     resources.TV.blit(width - 300, height - 200)
     resources.news_phone.blit(width - 300, height - 200)
-    main_player.draw()
+    main_batch.draw()
 
 # 120 FPS
 pyglet.clock.schedule_interval(update, 1 / 120.0)
