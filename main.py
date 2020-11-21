@@ -3,11 +3,12 @@ import arcade
 from game import constants, entity
 
 
-class Window(arcade.Window):
+class GameView(arcade.View):
     def __init__(self):
         # Build window
-        super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
+        super().__init__()
         # arcade.set_background_color(arcade.color.AMAZON)
+        self.window.set_mouse_visible(False)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -175,8 +176,9 @@ class Window(arcade.Window):
             # TODO: Collisions change suit
             if self.immune_for <= 0:
                 print("COLLIDED")
+                self.immune_for = 3
                 self.hits_left -= 1
-                self.player.remove_from_sprite_lists()
+                # self.player.remove_from_sprite_lists()
                 # player = entity.Entity("hazmat")
                 # grid_x = 1
                 # grid_y = 1
@@ -199,8 +201,10 @@ class Window(arcade.Window):
 
 
 def main():
-    window = Window()
-    window.setup()
+    window = arcade.Window(constants.WIDTH, constants.HEIGHT, constants.TITLE)
+    start_view = GameView()
+    window.show_view(start_view)
+    start_view.setup()
     arcade.run()
 
 
