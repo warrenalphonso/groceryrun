@@ -9,21 +9,28 @@ def center(im):
     im.anchor_y = im.height // 2
 
 home_background = pyglet.resource.image("home_background.png")
+
+### AMOUNTS
+
 # 62 x 27
-money_amount = pyglet.resource.image("money_amount.png")
+money_amount = pyglet.resource.image("amounts/money_amount.png")
 money_amount.width = 120
 money_amount.height = 27 / 62 * money_amount.width
 center(money_amount)
 # 77 x 32 
-toilet_paper_amount = pyglet.resource.image("toilet_paper_amount.png")
+toilet_paper_amount = pyglet.resource.image("amounts/toilet_paper_amount.png")
 toilet_paper_amount.width = 120 
 toilet_paper_amount.height = 32 / 77 * toilet_paper_amount.width 
 center(toilet_paper_amount)
 # 77 x 32 
-pills_amount = pyglet.resource.image("pills_amount.png")
+pills_amount = pyglet.resource.image("amounts/pills_amount.png")
 pills_amount.width = 120 
 pills_amount.height = 32 / 77 * pills_amount.width 
 center(pills_amount)
+
+### TV 
+
+# TV = pyglet.resource.image("tv/TV")
 
 ### ENTITIES 
 
