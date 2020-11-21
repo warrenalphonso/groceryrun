@@ -1,7 +1,7 @@
 
 FONT = "Times New Roman"
 
-GRAVITY = (0, -1000)
+GRAVITY = (0, -2000)
 MASS = 1.0
 PLAYER_MASS = 2.0
 
@@ -27,21 +27,25 @@ ZONE_NO_ANIMATION = 0.1
 SPRITE_IMAGE_SIZE = 64
 
 # Scale sprites up or down
-SPRITE_SCALING_PLAYER = .8
-SPRITE_SCALING_TILES = .5
+SPRITE_SCALING_PLAYER = 1.4
+SPRITE_SCALING_TILES = 1
 
 # Scaled sprite size for tiles
 SPRITE_SIZE = int(SPRITE_IMAGE_SIZE * SPRITE_SCALING_TILES)
 
 # Size of grid to show on screen, in number of tiles
-SCREEN_GRID_WIDTH = 50
-SCREEN_GRID_HEIGHT = 24
+SCREEN_GRID_WIDTH = 16
+SCREEN_GRID_HEIGHT = 9
 
 # Window size
 WIDTH = SPRITE_SIZE * SCREEN_GRID_WIDTH
 HEIGHT = SPRITE_SIZE * SCREEN_GRID_HEIGHT
 TITLE = "Grocery Run"
 DOOR_MAX_X = 200
+
+# Viewport for scrolling
+LEFT_VIEWPORT_MARGIN = 250
+RIGHT_VIEWPORT_MARGIN = 250
 
 # Distance from end of window when we start scrolling
 VIEWPORT_MARGIN = 300

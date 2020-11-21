@@ -13,6 +13,7 @@ class Window(arcade.Window):
         self.left_pressed = False
         self.right_pressed = False
         self.facing = "right"
+        self.view_left = 0
         # initiailze player list
         self.player_list = arcade.SpriteList()
         self.player = entity.Entity("hazmat")
@@ -73,6 +74,7 @@ class Window(arcade.Window):
             self.right_pressed = False
 
     def on_update(self, dt):
+        # DEALING WITH MOVEMENT
         grounded = self.physics_engine.is_on_ground(self.player)
         if self.left_pressed and not self.right_pressed:
             if grounded:
@@ -96,6 +98,22 @@ class Window(arcade.Window):
             self.physics_engine.set_friction(self.player, 1)
 
         self.physics_engine.step()
+
+        # DEALING WITH VIEWPORT
+        changed_viewport = False
+        left_boundary = self.view_left + constants.LEFT_VIEWPORT_MARGIN
+        if self.player.center_x < left_boundary:
+            self.view_left -= left_boundary - self.player.center_x
+            changed_viewport = True
+        right_boundary = self.view_left + constants.WIDTH - constants.RIGHT_VIEWPORT_MARGIN
+        if self.player.center_x > right_boundary:
+            self.view_left += self.player.center_x - right_boundary
+            changed_viewport = True
+        if changed_viewport:
+            self.view_left = int(self.view_left)
+            # Scroll
+            arcade.set_viewport(
+                self.view_left, constants.WIDTH + self.view_left, 0, constants.HEIGHT)
 
     def on_draw(self):
         arcade.start_render()
