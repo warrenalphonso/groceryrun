@@ -2,6 +2,48 @@ from game.constants import SPRITE_SCALING_TILES
 import arcade
 from game import constants, entity
 
+hits_left = 4
+
+
+class HomeView(arcade.View):
+    def on_show(self):
+        arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
+        # Reset the viewport, necessary if we have a scrolling game
+        arcade.set_viewport(0, constants.WIDTH - 1, 0, constants.HEIGHT - 1)
+
+    def on_draw(self):
+        """ Draw this view """
+        arcade.start_render()
+        arcade.draw_text("Instructions Screen", constants.WIDTH / 2, constants.HEIGHT / 2,
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_text("Click to advance", constants.WIDTH / 2, constants.HEIGHT / 2-75,
+                         arcade.color.WHITE, font_size=20, anchor_x="center")
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """ If the user presses the mouse button, start the game. """
+        game_view = GameView()
+        game_view.setup()
+        self.window.show_view(game_view)
+
+
+class GameOverView(arcade.View):
+    def __init__(self):
+        super().__init__()
+        self.texture = arcade.load_texture("assets/toilet_paper.png")
+        arcade.set_viewport(0, constants.WIDTH - 1, 0, constants.HEIGHT - 1)
+
+    def on_draw(self):
+        arcade.start_render()
+        self.texture.draw_sized(constants.WIDTH / 2, constants.HEIGHT / 2,
+                                constants.WIDTH, constants.HEIGHT)
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        game_view = GameView()
+        game_view.setup()
+        global hits_left
+        hits_left = 4
+        self.window.show_view(game_view)
+
 
 class GameView(arcade.View):
     def __init__(self):
@@ -18,12 +60,19 @@ class GameView(arcade.View):
         self.right_pressed = False
         self.facing = "right"
         self.view_left = 0
-        self.hits_left = 4
         self.score = 0
         self.immune_for = 3
         # initiailze player list
         self.player_list = arcade.SpriteList()
-        self.player = entity.Entity("hazmat")
+        # name = "main_char"
+        if hits_left == 4:
+            self.player = entity.Entity("hazmat")
+        elif hits_left == 3:
+            self.player = entity.Entity("main_char_gas")
+        elif hits_left == 2:
+            self.player = entity.Entity("main_char_mask")
+        else:
+            self.player = entity.Entity("main_char")
         grid_x = 1
         grid_y = 1
         self.player.center_x = constants.SPRITE_SIZE * \
@@ -173,20 +222,16 @@ class GameView(arcade.View):
             arcade.set_viewport(
                 self.view_left, constants.WIDTH + self.view_left, 0, constants.HEIGHT)
         if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
-            # TODO: Collisions change suit
             if self.immune_for <= 0:
-                print("COLLIDED")
-                self.immune_for = 3
-                self.hits_left -= 1
-                # self.player.remove_from_sprite_lists()
-                # player = entity.Entity("hazmat")
-                # grid_x = 1
-                # grid_y = 1
-                # self.player.center_x = constants.SPRITE_SIZE * \
-                #     grid_x + constants.SPRITE_SIZE / 2
-                # self.player.center_y = constants.SPRITE_SIZE * \
-                #     grid_y + constants.SPRITE_SIZE / 2
-                # self.player_list.append(player)
+                global hits_left
+                hits_left -= 1
+                if hits_left <= 0:
+                    view = GameOverView()
+                    self.window.show_view(view)
+                else:
+                    game_view = GameView()
+                    game_view.setup()
+                    self.window.show_view(game_view)
 
     def on_draw(self):
         arcade.start_render()
@@ -202,9 +247,9 @@ class GameView(arcade.View):
 
 def main():
     window = arcade.Window(constants.WIDTH, constants.HEIGHT, constants.TITLE)
-    start_view = GameView()
+    start_view = HomeView()
     window.show_view(start_view)
-    start_view.setup()
+    # start_view.setup()
     arcade.run()
 
 
