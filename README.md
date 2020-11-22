@@ -10,17 +10,9 @@ with a customer, you lose a life and your mask strength is decreased. Beware the
 other customers: they're not as concerned about social distancing as you are.
 Once you lose all protection and get infected, it's game over.
 
-<div style="display: flex;">
-    <div style="flex: 33.33%; padding: 5px;">
-        <img src="assets/hassan.gif" width=250/>
-    </div>
-    <div style="flex: 33.33%; padding: 5px;">
-        <img src="assets/smith.gif" width=250/>
-    </div>
-    <div style="flex: 33.33%; padding: 5px;">
-        <img src="assets/karen.gif" width=250/>
-    </div>
-</div>
+<img src="assets/hassan.gif" width=200/>
+<img src="assets/smith.gif" width=200/>
+<img src="assets/karen.gif" width=200/>
 
 # Installation
 
