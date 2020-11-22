@@ -4,52 +4,112 @@ from game import constants, entity
 
 hits_left = 4
 item_list = arcade.SpriteList()
-for x in range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
-    TP = arcade.Sprite(
-        "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
-    TP.center_x = x
-    TP.center_y = 200
-    item_list.append(TP)
+for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
+    if i == 2:
+        continue
+    elif i == 12:
+        continue
+    else:
+        TP = arcade.Sprite(
+            "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+        TP.center_x = x
+        TP.center_y = 200
+        item_list.append(TP)
 score = 0
+goal = 15
+sneeze = arcade.Sound("assets/sneeze.flac")
+music = arcade.Sound("assets/music.mp3")
+music.play(volume=.03)
 
 
 class HomeView(arcade.View):
     def on_show(self):
-        arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
+        arcade.set_background_color(arcade.csscolor.LIGHT_SKY_BLUE)
+        self.texture = arcade.load_texture("assets/logo.png")
+        self.start_blank = arcade.load_texture("assets/normal_start.png")
         # Reset the viewport, necessary if we have a scrolling game
         arcade.set_viewport(0, constants.WIDTH - 1, 0, constants.HEIGHT - 1)
+        self.window.set_mouse_visible(True)
 
     def on_draw(self):
-        """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Instructions Screen", constants.WIDTH / 2, constants.HEIGHT / 2,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Click to advance", constants.WIDTH / 2, constants.HEIGHT / 2-75,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
+        self.texture.draw_sized(constants.WIDTH / 2, constants.HEIGHT / 3 * 2,
+                                constants.WIDTH / 2, constants.HEIGHT / 2)
+        self.start_blank.draw_sized(constants.WIDTH / 2, constants.HEIGHT * 1 / 5,
+                                    constants.WIDTH / 4, constants.HEIGHT / 6)
 
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user presses the mouse button, start the game. """
+    def on_mouse_press(self, x, ywd, button, modifiers):
         game_view = GameView()
         game_view.setup()
         self.window.show_view(game_view)
 
 
-class GameOverView(arcade.View):
+class GameOver(arcade.View):
     def __init__(self):
         super().__init__()
-        self.texture = arcade.load_texture("assets/toilet_paper.png")
+        self.texture = arcade.load_texture("assets/game_over.gif")
         arcade.set_viewport(0, constants.WIDTH - 1, 0, constants.HEIGHT - 1)
+        self.window.set_mouse_visible(True)
 
     def on_draw(self):
         arcade.start_render()
-        self.texture.draw_sized(constants.WIDTH / 2, constants.HEIGHT / 2,
-                                constants.WIDTH, constants.HEIGHT)
+        if score >= goal and hits_left > 0:
+            pass
+        else:
+            self.texture.draw_sized(constants.WIDTH / 2, constants.HEIGHT / 2,
+                                    constants.WIDTH, constants.HEIGHT)
 
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
+    def on_mouse_press(self, x, y, button, modifiers):
+        global hits_left, score, item_list
+        hits_left = 4
+        score = 0
+        item_list = arcade.SpriteList()
+        for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
+            if i == 2:
+                continue
+            elif i == 12:
+                continue
+            else:
+                TP = arcade.Sprite(
+                    "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+                TP.center_x = x
+                TP.center_y = 200
+                item_list.append(TP)
+
+        start_view = HomeView()
+        self.window.show_view(start_view)
+
+
+class GameWin(arcade.View):
+    def on_show(self):
+        arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
+        arcade.set_viewport(0, constants.WIDTH - 1, 0, constants.HEIGHT - 1)
+        self.window.set_mouse_visible(True)
+
+    def on_draw(self):
+        arcade.start_render()
+        arcade.draw_text("You win! Click to Play Again!", constants.WIDTH / 2, constants.HEIGHT / 2,
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        global hits_left, score, item_list
+        hits_left = 4
+        score = 0
+        item_list = arcade.SpriteList()
+        for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
+            if i == 2:
+                continue
+            elif i == 12:
+                continue
+            else:
+                TP = arcade.Sprite(
+                    "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+                TP.center_x = x
+                TP.center_y = 200
+                item_list.append(TP)
+
         game_view = GameView()
         game_view.setup()
-        global hits_left
-        hits_left = 4
         self.window.show_view(game_view)
 
 
@@ -57,7 +117,7 @@ class GameView(arcade.View):
     def __init__(self):
         # Build window
         super().__init__()
-        # arcade.set_background_color(arcade.color.AMAZON)
+        arcade.set_viewport(0, constants.WIDTH - 1, 0, constants.HEIGHT - 1)
         self.window.set_mouse_visible(False)
 
     def setup(self):
@@ -101,8 +161,104 @@ class GameView(arcade.View):
         enemy1.left = 6 * constants.SPRITE_SIZE
         enemy1.boundary_left = enemy1.left - 300
         enemy1.boundary_right = enemy1.left + 250
-        enemy1.change_x = 10
+        enemy1.change_x = 2
         self.enemy_list.append(enemy1)
+
+        enemy2 = entity.Entity("karen")
+        enemy2.bottom = constants.SPRITE_SIZE
+        enemy2.left = 15 * constants.SPRITE_SIZE
+        enemy2.boundary_left = enemy2.left - 50
+        enemy2.boundary_right = enemy2.left + 256
+        enemy2.change_x = 2
+        self.enemy_list.append(enemy2)
+
+        enemy3 = entity.Entity("fatman")
+        enemy3.bottom = 4 * constants.SPRITE_SIZE
+        enemy3.left = 12 * constants.SPRITE_SIZE
+        enemy3.boundary_left = enemy3.left
+        enemy3.boundary_right = enemy3.left + 512
+        enemy3.change_x = 2
+        self.enemy_list.append(enemy3)
+
+        enemy4 = entity.Entity("karen")
+        enemy4.bottom = 3 * constants.SPRITE_SIZE
+        enemy4.left = 6 * constants.SPRITE_SIZE
+        enemy4.boundary_left = enemy4.left - 256
+        enemy4.boundary_right = enemy4.left + 128
+        enemy4.change_x = 1
+        self.enemy_list.append(enemy4)
+
+        enemy5 = entity.Entity("fatman")
+        enemy5.bottom = 7 * constants.SPRITE_SIZE
+        enemy5.left = 17 * constants.SPRITE_SIZE
+        enemy5.boundary_left = enemy5.left - 50
+        enemy5.boundary_right = enemy5.left + 256
+        enemy5.change_x = 2
+        self.enemy_list.append(enemy5)
+
+        enemy6 = entity.Entity("fatman")
+        enemy6.bottom = 7 * constants.SPRITE_SIZE
+        enemy6.left = 29 * constants.SPRITE_SIZE
+        enemy6.boundary_left = enemy6.left - 256
+        enemy6.boundary_right = enemy6.left + 64
+        enemy6.change_x = 3
+        self.enemy_list.append(enemy6)
+
+        enemy7 = entity.Entity("fatman")
+        enemy7.bottom = constants.SPRITE_SIZE
+        enemy7.left = 32 * constants.SPRITE_SIZE
+        enemy7.boundary_left = enemy7.left - 64
+        enemy7.boundary_right = enemy7.left + 18 * constants.SPRITE_SIZE
+        enemy7.change_x = 5
+        self.enemy_list.append(enemy7)
+
+        enemy8 = entity.Entity("fatman")
+        enemy8.bottom = 7 * constants.SPRITE_SIZE
+        enemy8.left = 48 * constants.SPRITE_SIZE
+        enemy8.boundary_left = enemy8.left - 128
+        enemy8.boundary_right = enemy8.left + 200
+        enemy8.change_x = 7
+        self.enemy_list.append(enemy8)
+
+        enemy9 = entity.Entity("karen")
+        enemy9.bottom = constants.SPRITE_SIZE
+        enemy9.left = 48 * constants.SPRITE_SIZE
+        enemy9.boundary_left = enemy9.left - 18 * constants.SPRITE_SIZE
+        enemy9.boundary_right = enemy9.left + 64
+        enemy9.change_x = 3
+        self.enemy_list.append(enemy9)
+
+        enemy10 = entity.Entity("karen")
+        enemy10.bottom = constants.SPRITE_SIZE
+        enemy10.left = 40 * constants.SPRITE_SIZE
+        enemy10.boundary_left = enemy10.left - 9 * constants.SPRITE_SIZE
+        enemy10.boundary_right = enemy10.left + 9 * constants.SPRITE_SIZE
+        enemy10.change_x = 5
+        self.enemy_list.append(enemy10)
+
+        enemy11 = entity.Entity("fatman")
+        enemy11.bottom = constants.SPRITE_SIZE
+        enemy11.left = 48 * constants.SPRITE_SIZE
+        enemy11.boundary_left = enemy11.left - 18 * constants.SPRITE_SIZE
+        enemy11.boundary_right = enemy11.left + 64
+        enemy11.change_x = 5
+        self.enemy_list.append(enemy11)
+
+        enemy12 = entity.Entity("fatman")
+        enemy12.bottom = constants.SPRITE_SIZE
+        enemy12.left = 56 * constants.SPRITE_SIZE
+        enemy12.boundary_left = enemy12.left - 144
+        enemy12.boundary_right = enemy12.left + 300
+        enemy12.change_x = 3
+        self.enemy_list.append(enemy12)
+
+        enemy13 = entity.Entity("fatman")
+        enemy13.bottom = 7 * constants.SPRITE_SIZE
+        enemy13.left = 64 * constants.SPRITE_SIZE
+        enemy13.boundary_left = enemy13.left - 128
+        enemy13.boundary_right = enemy13.left + 200
+        enemy13.change_x = 3
+        self.enemy_list.append(enemy13)
 
         # Create physics
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -169,10 +325,12 @@ class GameView(arcade.View):
         TP_hit_list = arcade.check_for_collision_with_list(
             self.player, item_list)
         for TP in TP_hit_list:
-            print("GOT ONE")
             global score
             TP.remove_from_sprite_lists()
             score += 1
+            if score >= 12:
+                view = GameWin()
+                self.window.show_view(view)
 
         grounded = self.physics_engine.is_on_ground(self.player)
         if self.left_pressed and not self.right_pressed:
@@ -215,15 +373,21 @@ class GameView(arcade.View):
                 self.view_left, constants.WIDTH + self.view_left, 0, constants.HEIGHT)
         if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
             if self.immune_for <= 0:
+                self.immune_for = 3
+                sneeze.play()
                 global hits_left
                 hits_left -= 1
                 if hits_left <= 0:
-                    view = GameOverView()
+                    view = GameOver()
                     self.window.show_view(view)
                 else:
                     game_view = GameView()
                     game_view.setup()
                     self.window.show_view(game_view)
+        if self.player.center_y < 0:
+            game_view = GameView()
+            game_view.setup()
+            self.window.show_view(game_view)
 
     def on_draw(self):
         arcade.start_render()
