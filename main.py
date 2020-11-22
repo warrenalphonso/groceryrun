@@ -3,6 +3,14 @@ import arcade
 from game import constants, entity
 
 hits_left = 4
+item_list = arcade.SpriteList()
+for x in range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
+    TP = arcade.Sprite(
+        "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+    TP.center_x = x
+    TP.center_y = 200
+    item_list.append(TP)
+score = 0
 
 
 class HomeView(arcade.View):
@@ -60,7 +68,6 @@ class GameView(arcade.View):
         self.right_pressed = False
         self.facing = "right"
         self.view_left = 0
-        self.score = 0
         self.immune_for = 3
         # initiailze player list
         self.player_list = arcade.SpriteList()
@@ -86,13 +93,6 @@ class GameView(arcade.View):
             map, "Platform", constants.SPRITE_SCALING_TILES)
 
         # Spatial hashing speeds time to find collision
-        self.item_list = arcade.SpriteList()
-        for x in range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
-            TP = arcade.Sprite(
-                "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
-            TP.center_x = x
-            TP.center_y = 200
-            self.item_list.append(TP)
 
         # ENEMY
         self.enemy_list = arcade.SpriteList()
@@ -103,15 +103,6 @@ class GameView(arcade.View):
         enemy1.boundary_right = enemy1.left + 250
         enemy1.change_x = 10
         self.enemy_list.append(enemy1)
-
-        # for x in range(40, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20)):
-        #     enemy = entity.Entity("fatman")
-        #     enemy.bottom = constants.SPRITE_SIZE
-        #     enemy.left = x
-        #     enemy.boundary_left = x - 300
-        #     enemy.boundary_right = x + 400
-        #     enemy.change_x = 2
-        #     self.enemy_list.append(enemy)
 
         # Create physics
         self.physics_engine = arcade.PymunkPhysicsEngine(
@@ -128,7 +119,7 @@ class GameView(arcade.View):
                                             collision_type="floor",
                                             body_type=arcade.PymunkPhysicsEngine.STATIC)
 
-        self.physics_engine.add_sprite_list(self.item_list,
+        self.physics_engine.add_sprite_list(item_list,
                                             friction=constants.DYNAMIC_ITEM_FRICTION,
                                             collision_type="item")
 
@@ -176,11 +167,12 @@ class GameView(arcade.View):
 
         # TP
         TP_hit_list = arcade.check_for_collision_with_list(
-            self.player, self.item_list)
+            self.player, item_list)
         for TP in TP_hit_list:
             print("GOT ONE")
+            global score
             TP.remove_from_sprite_lists()
-            self.score += 1
+            score += 1
 
         grounded = self.physics_engine.is_on_ground(self.player)
         if self.left_pressed and not self.right_pressed:
@@ -242,7 +234,15 @@ class GameView(arcade.View):
         self.platform_list.draw()
         self.enemy_list.draw()
         self.player_list.draw()
-        self.item_list.draw()
+        item_list.draw()
+        tp_amount = arcade.load_texture(
+            "assets/amounts/toilet_paper_amount.png")
+        scale = 1
+        arcade.draw_scaled_texture_rectangle(
+            max(120, self.view_left + 70), constants.HEIGHT - 35, tp_amount, scale, 0)
+        score_text = f"{score}"
+        arcade.draw_text(score_text, max(94, self.view_left + 44), constants.HEIGHT - 50,
+                         arcade.csscolor.BLACK, 18)
 
 
 def main():
