@@ -80,29 +80,14 @@ class GameOverView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        if score >= goal and hits_left > 0:
+        if self.window.score >= self.window.goal and self.window.hits_left > 0:
             pass
         else:
             self.texture.draw_sized(constants.WIDTH / 2, constants.HEIGHT / 2,
                                     constants.WIDTH, constants.HEIGHT)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        global hits_left, score, item_list
-        hits_left = 4
-        score = 0
-        item_list = arcade.SpriteList()
-        for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
-            if i == 2:
-                continue
-            elif i == 12:
-                continue
-            else:
-                TP = arcade.Sprite(
-                    "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
-                TP.center_x = x
-                TP.center_y = 200
-                item_list.append(TP)
-
+        self.window.reset_game()
         start_view = HomeView()
         self.window.show_view(start_view)
 
@@ -119,22 +104,7 @@ class GameWinView(arcade.View):
                          arcade.color.WHITE, font_size=50, anchor_x="center")
 
     def on_mouse_press(self, x, y, button, modifiers):
-        global hits_left, score, item_list
-        hits_left = 4
-        score = 0
-        item_list = arcade.SpriteList()
-        for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
-            if i == 2:
-                continue
-            elif i == 12:
-                continue
-            else:
-                TP = arcade.Sprite(
-                    "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
-                TP.center_x = x
-                TP.center_y = 200
-                item_list.append(TP)
-
+        self.window.reset_game()
         game_view = GameView()
         game_view.setup()
         self.window.show_view(game_view)
@@ -158,11 +128,11 @@ class GameView(arcade.View):
         # initiailze player list
         self.player_list = arcade.SpriteList()
         # name = "main_char"
-        if hits_left == 4:
+        if self.window.hits_left == 4:
             self.player = entity.Entity("hazmat")
-        elif hits_left == 3:
+        elif self.window.hits_left == 3:
             self.player = entity.Entity("main_char_gas")
-        elif hits_left == 2:
+        elif self.window.hits_left == 2:
             self.player = entity.Entity("main_char_mask")
         else:
             self.player = entity.Entity("main_char")
@@ -301,7 +271,7 @@ class GameView(arcade.View):
                                             collision_type="floor",
                                             body_type=arcade.PymunkPhysicsEngine.STATIC)
 
-        self.physics_engine.add_sprite_list(item_list,
+        self.physics_engine.add_sprite_list(self.window.item_list,
                                             friction=constants.DYNAMIC_ITEM_FRICTION,
                                             collision_type="item")
 
@@ -354,12 +324,11 @@ class GameView(arcade.View):
 
         # TP
         TP_hit_list = arcade.check_for_collision_with_list(
-            self.player, item_list)
+            self.player, self.window.item_list)
         for TP in TP_hit_list:
-            global score
             TP.remove_from_sprite_lists()
-            score += 1
-            if score >= 12:
+            self.window.score += 1
+            if self.window.score >= 12:
                 view = GameWinView()
                 self.window.show_view(view)
 
@@ -408,9 +377,8 @@ class GameView(arcade.View):
                 if self.window.fx_on:
                     # sounds.sneeze.play()
                     sounds.grunt.play()
-                global hits_left
-                hits_left -= 1
-                if hits_left <= 0:
+                self.window.hits_left -= 1
+                if self.window.hits_left <= 0:
                     view = GameOverView()
                     self.window.show_view(view)
                 else:
@@ -431,13 +399,13 @@ class GameView(arcade.View):
         self.platform_list.draw()
         self.enemy_list.draw()
         self.player_list.draw()
-        item_list.draw()
+        self.window.item_list.draw()
         tp_amount = arcade.load_texture(
             "assets/amounts/toilet_paper_amount.png")
         scale = 1
         arcade.draw_scaled_texture_rectangle(
             max(120, self.view_left + 70), constants.HEIGHT - 35, tp_amount, scale, 0)
-        score_text = f"{score}"
+        score_text = f"{self.window.score}"
         arcade.draw_text(score_text, max(94, self.view_left + 44), constants.HEIGHT - 50,
                          arcade.csscolor.BLACK, 18)
 
@@ -445,6 +413,7 @@ class GameView(arcade.View):
 class CustomWindow(arcade.Window):
     def __init__(self):
         super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
+        self.reset_game()
         self.music_on = True
         self.fx_on = True
 
@@ -455,9 +424,10 @@ class CustomWindow(arcade.Window):
         if self.music_on and sounds.music.is_complete():
             sounds.music.play(volume=.03)
 
+    # TODO: This should be associated with a level, not the window.
     def reset_game(self):
-        hits_left = 4
-        item_list = arcade.SpriteList()
+        self.hits_left = 4
+        self.item_list = arcade.SpriteList()
         for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
             if i == 2:
                 continue
@@ -468,34 +438,16 @@ class CustomWindow(arcade.Window):
                     "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
                 TP.center_x = x
                 TP.center_y = 200
-                item_list.append(TP)
-        score = 0
-        goal = 15
+                self.item_list.append(TP)
+        self.score = 0
+        self.goal = 15
 
 
 def main():
     window = CustomWindow()
     start_view = HomeView()
     window.show_view(start_view)
-    # start_view.setup()
     arcade.run()
-
-
-hits_left = 4
-item_list = arcade.SpriteList()
-for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
-    if i == 2:
-        continue
-    elif i == 12:
-        continue
-    else:
-        TP = arcade.Sprite(
-            "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
-        TP.center_x = x
-        TP.center_y = 200
-        item_list.append(TP)
-score = 0
-goal = 15
 
 
 if __name__ == "__main__":
