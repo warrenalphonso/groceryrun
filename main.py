@@ -52,6 +52,7 @@ class PauseView(arcade.View):
     def on_show(self):
         pass
 
+    # TODO: Conver to mouse click
     def on_draw(self):
         self.game_view.on_draw()
         # Draw blue hue over screen
@@ -74,6 +75,14 @@ class PauseView(arcade.View):
         elif key == arcade.key.ENTER:
             start_view = HomeView()
             self.window.show_view(start_view)
+        elif key == arcade.key.M:
+            if self.window.music_on:
+                self.window.music_on = False
+                music.stop()
+            else:
+                self.window.music_on = True
+        elif key == arcade.key.F:
+            self.window.fx_on = not self.window.fx_on
 
 
 class GameOverView(arcade.View):
@@ -408,7 +417,8 @@ class GameView(arcade.View):
         if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
             if self.immune_for <= 0:
                 self.immune_for = 3
-                sneeze.play()
+                if self.window.fx_on:
+                    sneeze.play()
                 global hits_left
                 hits_left -= 1
                 if hits_left <= 0:
@@ -446,11 +456,13 @@ class GameView(arcade.View):
 class CustomWindow(arcade.Window):
     def __init__(self):
         super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
+        self.music_on = True
+        self.fx_on = True
         music.play(volume=.03)
 
     def on_update(self, dt):
         # Loop sound
-        if music.is_complete():
+        if self.music_on and music.is_complete():
             music.play(volume=.03)
 
 
