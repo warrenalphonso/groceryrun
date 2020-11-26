@@ -44,7 +44,21 @@ class HomeView(arcade.View):
         self.window.show_view(game_view)
 
 
-class GameOver(arcade.View):
+class PauseView(arcade.View):
+    def __init__(self, game_view):
+        super().__init__()
+        self.game_view = game_view
+
+    def on_show(self):
+        pass
+
+    def on_draw(self):
+        self.game_view.on_draw()
+        arcade.draw_text("PAUSED", constants.WIDTH/2, constants.HEIGHT/2+50,
+                         arcade.color.BLACK, font_size=50, anchor_x="center")
+
+
+class GameOverView(arcade.View):
     def __init__(self):
         super().__init__()
         self.texture = arcade.load_texture("assets/game_over.gif")
@@ -80,7 +94,7 @@ class GameOver(arcade.View):
         self.window.show_view(start_view)
 
 
-class GameWin(arcade.View):
+class GameWinView(arcade.View):
     def on_show(self):
         arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
         arcade.set_viewport(0, constants.WIDTH - 1, 0, constants.HEIGHT - 1)
@@ -288,6 +302,9 @@ class GameView(arcade.View):
             if self.physics_engine.is_on_ground(self.player):
                 f = (0, constants.PLAYER_JUMP_IMPULSE)
                 self.physics_engine.apply_impulse(self.player, f)
+        elif key == arcade.key.ESCAPE:
+            pause_view = PauseView(self)
+            self.window.show_view(pause_view)
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
@@ -296,7 +313,7 @@ class GameView(arcade.View):
             self.right_pressed = False
 
     def on_update(self, dt):
-        # Loop sound 
+        # Loop sound
         if music.is_complete():
             music.play()
         if self.immune_for > 0:
@@ -332,7 +349,7 @@ class GameView(arcade.View):
             TP.remove_from_sprite_lists()
             score += 1
             if score >= 12:
-                view = GameWin()
+                view = GameWinView()
                 self.window.show_view(view)
 
         grounded = self.physics_engine.is_on_ground(self.player)
@@ -381,7 +398,7 @@ class GameView(arcade.View):
                 global hits_left
                 hits_left -= 1
                 if hits_left <= 0:
-                    view = GameOver()
+                    view = GameOverView()
                     self.window.show_view(view)
                 else:
                     game_view = GameView()
