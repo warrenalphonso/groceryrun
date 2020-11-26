@@ -83,11 +83,9 @@ class GameOverView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        if self.window.score >= self.window.goal and self.window.hits_left > 0:
-            pass
-        else:
-            self.texture.draw_sized(constants.WIDTH / 2, constants.HEIGHT / 2,
-                                    constants.WIDTH, constants.HEIGHT)
+        l, r, b, t = self.window.get_viewport()
+        self.texture.draw_sized(l + (r - l) / 2, constants.HEIGHT / 2,
+                                constants.WIDTH, constants.HEIGHT)
 
     def on_mouse_press(self, x, y, button, modifiers):
         self.window.reset_game()
@@ -98,12 +96,12 @@ class GameOverView(arcade.View):
 class GameWinView(arcade.View):
     def on_show(self):
         arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
-        arcade.set_viewport(0, constants.WIDTH, 0, constants.HEIGHT)
         self.window.set_mouse_visible(True)
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text("You win! Click to Play Again!", constants.WIDTH / 2, constants.HEIGHT / 2,
+        l, r, b, t = self.window.get_viewport()
+        arcade.draw_text("You win! Click to Play Again!", l + (r - l) / 2, constants.HEIGHT / 2,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -318,11 +316,9 @@ class GameView(arcade.View):
             self.cashier.texture = arcade.load_texture_pair(
                 "assets/cashier/open.png")[0]
         self.cashier.update()
-        if arcade.check_for_collision(self.player, self.cashier):
-            if self.window.score < self.window.goal:
-                print("HI")
-                arcade.draw_text("Press ENTER to exit", constants.WIDTH/2,
-                                 constants.HEIGHT * .35, arcade.color.BLACK, font_size=20, anchor_x="center")
+        if arcade.check_for_collision(self.player, self.cashier) and self.window.score >= self.window.goal:
+            game_win = GameWinView()
+            self.window.show_view(game_win)
 
         for enemy in self.enemy_list:
             # If the enemy hit the left boundary, reverse
@@ -349,9 +345,6 @@ class GameView(arcade.View):
         for TP in TP_hit_list:
             TP.remove_from_sprite_lists()
             self.window.score += 1
-            # if self.window.score >= self.window.goal:
-            #     game_win = GameWinView()
-            #     self.window.show_view(game_win)
 
         grounded = self.physics_engine.is_on_ground(self.player)
         if self.left_pressed and not self.right_pressed:
@@ -393,8 +386,7 @@ class GameView(arcade.View):
             arcade.set_viewport(
                 self.view_left, constants.WIDTH + self.view_left, 0, constants.HEIGHT)
         if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
-            # if self.immune_for <= 0:
-            if False:
+            if self.immune_for <= 0:
                 self.immune_for = 3
                 if self.window.fx_on:
                     # sounds.sneeze.play()
@@ -431,6 +423,12 @@ class GameView(arcade.View):
         score_text = f"{self.window.score}"
         arcade.draw_text(score_text, max(94, self.view_left + 44), constants.HEIGHT - 50,
                          arcade.csscolor.BLACK, 18)
+        if self.window.score < self.window.goal and arcade.check_for_collision(self.player, self.cashier):
+            arcade.draw_text("Come back with 15 items", self.view_left + constants.WIDTH / 2, constants.HEIGHT - 50,
+                             arcade.csscolor.CRIMSON, 24, anchor_x="center")
+        elif self.window.score >= self.window.goal:
+            arcade.draw_text("Find the cashier to checkout", self.view_left + constants.WIDTH / 2, constants.HEIGHT - 50,
+                             arcade.csscolor.CRIMSON, 24, anchor_x="center")
 
 
 class CustomWindow(arcade.Window):
@@ -463,4 +461,4 @@ class CustomWindow(arcade.Window):
                 TP.center_y = 200
                 self.item_list.append(TP)
         self.score = 0
-        self.goal = 1
+        self.goal = 15
