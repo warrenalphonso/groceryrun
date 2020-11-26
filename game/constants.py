@@ -20,6 +20,7 @@ PLAYER_PUNCH_FORCE = 600
 DISTANCE_PER_FRAME = 2
 ZONE_NO_ANIMATION = 0.1
 
+# TODO: Explain everything below.
 # Sprite image size
 SPRITE_IMAGE_SIZE = 64
 
@@ -39,11 +40,6 @@ WIDTH = SPRITE_SIZE * SCREEN_GRID_WIDTH
 HEIGHT = SPRITE_SIZE * SCREEN_GRID_HEIGHT
 LEVEL_WIDTH = SPRITE_SIZE * 100
 TITLE = "Grocery Run"
-DOOR_MAX_X = 200
 
-# Viewport for scrolling
-LEFT_VIEWPORT_MARGIN = 250
-RIGHT_VIEWPORT_MARGIN = 250
-
-# Distance from end of window when we start scrolling
+# Distance from left, right, top, bottom for us to start scrolling viewport.
 VIEWPORT_MARGIN = 300

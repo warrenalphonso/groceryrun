@@ -1,9 +1,9 @@
 import arcade
-from game import CustomWindow, HomeView
+from game import Window, HomeView
 
 
 def main():
-    window = CustomWindow.CustomWindow()
+    window = Window.Window()
     start_view = HomeView.HomeView()
     window.show_view(start_view)
     arcade.run()

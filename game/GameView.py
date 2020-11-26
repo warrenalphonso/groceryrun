@@ -262,11 +262,11 @@ class GameView(arcade.View):
 
         # DEALING WITH VIEWPORT
         changed_viewport = False
-        left_boundary = self.view_left + constants.LEFT_VIEWPORT_MARGIN
+        left_boundary = self.view_left + constants.VIEWPORT_MARGIN
         if self.player.center_x < left_boundary and self.view_left - (left_boundary - self.player.center_x) > 0:
             self.view_left -= left_boundary - self.player.center_x
             changed_viewport = True
-        right_boundary = self.view_left + constants.WIDTH - constants.RIGHT_VIEWPORT_MARGIN
+        right_boundary = self.view_left + constants.WIDTH - constants.VIEWPORT_MARGIN
         if self.player.center_x > right_boundary and self.view_left + (self.player.center_x - right_boundary) + constants.WIDTH < constants.LEVEL_WIDTH:
             self.view_left += self.player.center_x - right_boundary
             changed_viewport = True

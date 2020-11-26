@@ -2,7 +2,7 @@ import arcade
 from game import constants, sounds
 
 
-class CustomWindow(arcade.Window):
+class Window(arcade.Window):
     def __init__(self):
         super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
         self.reset_game()
