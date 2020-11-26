@@ -28,6 +28,9 @@ class Entity(arcade.Sprite):
         elif name == "karen":
             partial_path += "karen_walking"
             self.char = False
+        elif name == "employee":
+            partial_path += "employee_walking"
+            self.char = False
         else:
             raise Exception("Name provided for entity didn't match: " + name)
         if self.char:

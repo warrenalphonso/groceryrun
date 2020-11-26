@@ -1,6 +1,3 @@
-
-FONT = "Times New Roman"
-
 GRAVITY = (0, -2000)
 MASS = 1.0
 PLAYER_MASS = 2.0
