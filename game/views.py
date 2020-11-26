@@ -122,7 +122,6 @@ class GameView(arcade.View):
             "assets/background_final.png")
         self.left_pressed = False
         self.right_pressed = False
-        self.facing = "right"
         self.view_left = 0
         self.immune_for = 3
         # initiailze player list
@@ -323,13 +322,13 @@ class GameView(arcade.View):
         for enemy in self.enemy_list:
             # If the enemy hit the left boundary, reverse
             if enemy.boundary_left is not None and enemy.left < enemy.boundary_left:
-                enemy.facing = "right"
+                enemy.facing_left = 0
                 enemy.walk_curr_index = 0
                 enemy.change_x *= -1
                 enemy.move_enemy()
             # If the enemy hit the right boundary, reverse
             elif enemy.boundary_right is not None and enemy.right > enemy.boundary_right:
-                enemy.facing = "left"
+                enemy.facing_left = 1
                 enemy.walk_curr_index = 0
                 enemy.change_x *= -1
                 enemy.move_enemy()
