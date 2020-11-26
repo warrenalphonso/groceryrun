@@ -11,8 +11,7 @@ class LoseView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        l, r, b, t = arcade.get_viewport()
-        self.texture.draw_sized(l + (r - l) / 2, self.window.h / 2,
+        self.texture.draw_sized(self.window.l + self.window.w / 2, self.window.h / 2,
                                 self.window.w, self.window.h)
 
     def on_mouse_press(self, x, y, button, modifiers):
