@@ -11,7 +11,7 @@ for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL
         continue
     else:
         TP = arcade.Sprite(
-            "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+            "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
         TP.center_x = x
         TP.center_y = 200
         item_list.append(TP)
@@ -71,7 +71,7 @@ class GameOver(arcade.View):
                 continue
             else:
                 TP = arcade.Sprite(
-                    "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+                    "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
                 TP.center_x = x
                 TP.center_y = 200
                 item_list.append(TP)
@@ -103,7 +103,7 @@ class GameWin(arcade.View):
                 continue
             else:
                 TP = arcade.Sprite(
-                    "assets/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+                    "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
                 TP.center_x = x
                 TP.center_y = 200
                 item_list.append(TP)
@@ -296,6 +296,9 @@ class GameView(arcade.View):
             self.right_pressed = False
 
     def on_update(self, dt):
+        # Loop sound 
+        if music.is_complete():
+            music.play()
         if self.immune_for > 0:
             self.immune_for -= dt
         else:
