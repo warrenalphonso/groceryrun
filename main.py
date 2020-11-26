@@ -57,12 +57,23 @@ class PauseView(arcade.View):
         # Draw blue hue over screen
         arcade.draw_lrtb_rectangle_filled(
             left=0, right=constants.WIDTH, top=constants.HEIGHT, bottom=0,
-            color=arcade.color.LIGHT_SKY_BLUE + (150, ))  # Concatenate 200 for transparency
+            color=arcade.color.LIGHT_SKY_BLUE + (220, ))  # Concatenate 200 for transparency
         infection = arcade.load_texture("assets/infection_symbol.png")
         infection.draw_sized(constants.WIDTH / 2, constants.HEIGHT *
                              4 / 5, constants.HEIGHT / 4, constants.HEIGHT / 4)
         arcade.draw_text("PAUSED", constants.WIDTH/2, constants.HEIGHT * .55,
                          arcade.color.BLACK, font_size=40, anchor_x="center")
+        arcade.draw_text("Press ESCAPE to return to the game", constants.WIDTH/2,
+                         constants.HEIGHT * .3, arcade.color.BLACK, font_size=30, anchor_x="center")
+        arcade.draw_text("Press ENTER to exit", constants.WIDTH/2,
+                         constants.HEIGHT * .1, arcade.color.BLACK, font_size=30, anchor_x="center")
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(self.game_view)
+        elif key == arcade.key.ENTER:
+            start_view = HomeView()
+            self.window.show_view(start_view)
 
 
 class GameOverView(arcade.View):
