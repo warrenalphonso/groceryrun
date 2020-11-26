@@ -15,13 +15,14 @@ class Window(arcade.Window):
         self.fx_on = True
         sounds.music.play(volume=.03)
 
-    def on_resize(self, width, height):
-        self.update_window()
+    # def on_resize(self, width, height):
+    #     self.update_window()
 
     def on_update(self, dt):
         # Loop sound
         if self.music_on and sounds.music.is_complete():
             sounds.music.play(volume=.03)
+        self.update_window()
 
     # def on_key_press(self, key, modifiers):
     #     if key == arcade.key.F:
