@@ -1,26 +1,6 @@
 from game.constants import SPRITE_SCALING_TILES
 import arcade
-from game import constants, entity
-
-hits_left = 4
-item_list = arcade.SpriteList()
-for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
-    if i == 2:
-        continue
-    elif i == 12:
-        continue
-    else:
-        TP = arcade.Sprite(
-            "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
-        TP.center_x = x
-        TP.center_y = 200
-        item_list.append(TP)
-score = 0
-goal = 15
-grunt = arcade.Sound("assets/sounds/grunt.mp3")
-jump = arcade.Sound("assets/sounds/jump.mp3")
-# sneeze = arcade.Sound("assets/sounds/sneeze.flac")
-music = arcade.Sound("assets/sounds/music.mp3")
+from game import constants, entity, sounds
 
 
 class HomeView(arcade.View):
@@ -84,7 +64,7 @@ class PauseView(arcade.View):
         elif key == arcade.key.M:
             if self.window.music_on:
                 self.window.music_on = False
-                music.stop()
+                sounds.music.stop()
             else:
                 self.window.music_on = True
         elif key == arcade.key.F:
@@ -333,7 +313,7 @@ class GameView(arcade.View):
         elif key == arcade.key.UP or key == arcade.key.W:
             if self.physics_engine.is_on_ground(self.player):
                 if self.window.fx_on:
-                    jump.play()
+                    sounds.jump.play()
                 f = (0, constants.PLAYER_JUMP_IMPULSE)
                 self.physics_engine.apply_impulse(self.player, f)
         elif key == arcade.key.ESCAPE:
@@ -426,8 +406,8 @@ class GameView(arcade.View):
             if self.immune_for <= 0:
                 self.immune_for = 3
                 if self.window.fx_on:
-                    # sneeze.play()
-                    grunt.play()
+                    # sounds.sneeze.play()
+                    sounds.grunt.play()
                 global hits_left
                 hits_left -= 1
                 if hits_left <= 0:
@@ -467,12 +447,30 @@ class CustomWindow(arcade.Window):
         super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
         self.music_on = True
         self.fx_on = True
-        music.play(volume=.03)
+
+        sounds.music.play(volume=.03)
 
     def on_update(self, dt):
         # Loop sound
-        if self.music_on and music.is_complete():
-            music.play(volume=.03)
+        if self.music_on and sounds.music.is_complete():
+            sounds.music.play(volume=.03)
+
+    def reset_game(self):
+        hits_left = 4
+        item_list = arcade.SpriteList()
+        for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
+            if i == 2:
+                continue
+            elif i == 12:
+                continue
+            else:
+                TP = arcade.Sprite(
+                    "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+                TP.center_x = x
+                TP.center_y = 200
+                item_list.append(TP)
+        score = 0
+        goal = 15
 
 
 def main():
@@ -481,6 +479,23 @@ def main():
     window.show_view(start_view)
     # start_view.setup()
     arcade.run()
+
+
+hits_left = 4
+item_list = arcade.SpriteList()
+for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
+    if i == 2:
+        continue
+    elif i == 12:
+        continue
+    else:
+        TP = arcade.Sprite(
+            "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+        TP.center_x = x
+        TP.center_y = 200
+        item_list.append(TP)
+score = 0
+goal = 15
 
 
 if __name__ == "__main__":
