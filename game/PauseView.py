@@ -14,9 +14,7 @@ class PauseView(arcade.View):
     # TODO: Conver to mouse click
     def on_draw(self):
         self.game_view.on_draw()
-        l, r, b, t = self.window.get_viewport()
-        w = r - l
-        h = t - b
+        l, r, b, t, w, h = self.window.l, self.window.r, self.window.b, self.window.t, self.window.w, self.window.h
         # Draw blue hue over screen
         arcade.draw_lrtb_rectangle_filled(
             left=l, right=r, top=t, bottom=b,

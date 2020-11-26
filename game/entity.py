@@ -34,9 +34,9 @@ class Entity(arcade.Sprite):
         else:
             raise Exception("Name provided for entity didn't match: " + name)
         if self.char:
-            self.scale = constants.SPRITE_SCALING_PLAYER
+            self.scale = constants.SCALING_ENTITY
         else:
-            self.scale = constants.SPRITE_SCALING_TILES
+            self.scale = constants.SCALING_TILES
         self.num = 0
         self.stand_right = arcade.load_texture_pair(
             f"{partial_path}/1.png")
