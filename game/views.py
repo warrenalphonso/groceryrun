@@ -36,23 +36,26 @@ class PauseView(arcade.View):
     # TODO: Conver to mouse click
     def on_draw(self):
         self.game_view.on_draw()
+        l, r, b, t = self.window.get_viewport()
+        w = r - l
+        h = t - b
         # Draw blue hue over screen
         arcade.draw_lrtb_rectangle_filled(
-            left=0, right=constants.WIDTH, top=constants.HEIGHT, bottom=0,
+            left=l, right=r, top=t, bottom=b,
             color=arcade.color.LIGHT_SKY_BLUE + (220, ))  # Concatenate 200 for transparency
         infection = arcade.load_texture("assets/infection_symbol.png")
-        infection.draw_sized(constants.WIDTH / 2, constants.HEIGHT *
-                             4 / 5, constants.HEIGHT / 4, constants.HEIGHT / 4)
-        arcade.draw_text("PAUSED", constants.WIDTH/2, constants.HEIGHT * .55,
+        infection.draw_sized(l + w / 2, h *
+                             4 / 5, h / 4, h / 4)
+        arcade.draw_text("PAUSED", l + w/2, h * .55,
                          arcade.color.BLACK, font_size=40, anchor_x="center")
-        arcade.draw_text("Press ESCAPE to return to the game", constants.WIDTH/2,
-                         constants.HEIGHT * .45, arcade.color.BLACK, font_size=20, anchor_x="center")
-        arcade.draw_text("Press ENTER to exit", constants.WIDTH/2,
-                         constants.HEIGHT * .35, arcade.color.BLACK, font_size=20, anchor_x="center")
-        arcade.draw_text("Press M to toggle music", constants.WIDTH/2,
-                         constants.HEIGHT * .25, arcade.color.BLACK, font_size=20, anchor_x="center")
-        arcade.draw_text("Press F to toggle sound effects", constants.WIDTH/2,
-                         constants.HEIGHT * .15, arcade.color.BLACK, font_size=20, anchor_x="center")
+        arcade.draw_text("Press ESCAPE to return to the game", l + w/2,
+                         h * .45, arcade.color.BLACK, font_size=20, anchor_x="center")
+        arcade.draw_text("Press ENTER to exit", l + w/2,
+                         h * .35, arcade.color.BLACK, font_size=20, anchor_x="center")
+        arcade.draw_text("Press M to toggle music", l + w/2,
+                         h * .25, arcade.color.BLACK, font_size=20, anchor_x="center")
+        arcade.draw_text("Press F to toggle sound effects", l + w/2,
+                         h * .15, arcade.color.BLACK, font_size=20, anchor_x="center")
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
