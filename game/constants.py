@@ -20,26 +20,14 @@ PLAYER_PUNCH_FORCE = 600
 DISTANCE_PER_FRAME = 2
 ZONE_NO_ANIMATION = 0.1
 
-# TODO: Explain everything below.
-# Sprite image size
-SPRITE_IMAGE_SIZE = 64
-
-# Scale sprites up or down
-SPRITE_SCALING_PLAYER = 1.4
-SPRITE_SCALING_TILES = 1
-
+# Blocks are 64 x 64 pixels
+BLOCK_SIZE = 64
+# Scale tiles and entity
+SCALING_ENTITY = 1.4
+SCALING_TILES = 1
 # Scaled sprite size for tiles
-SPRITE_SIZE = int(SPRITE_IMAGE_SIZE * SPRITE_SCALING_TILES)
-
-# Size of grid to show on screen, in number of tiles
-SCREEN_GRID_WIDTH = 16
-SCREEN_GRID_HEIGHT = 9
-
-# Window size
-WIDTH = SPRITE_SIZE * SCREEN_GRID_WIDTH
-HEIGHT = SPRITE_SIZE * SCREEN_GRID_HEIGHT
+SPRITE_SIZE = int(BLOCK_SIZE * SCALING_TILES)
+# Custom level's width in blocks - this shouldn't be a constant
 LEVEL_WIDTH = SPRITE_SIZE * 100
-TITLE = "Grocery Run"
-
 # Distance from left, right, top, bottom for us to start scrolling viewport.
 VIEWPORT_MARGIN = 300

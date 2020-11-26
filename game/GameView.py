@@ -5,7 +5,7 @@ from game import constants, entity, sounds, WinView, PauseView, LoseView
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
-        arcade.set_viewport(0, constants.WIDTH, 0, constants.HEIGHT)
+        arcade.set_viewport(0, self.window.w, 0, self.window.h)
         self.window.set_mouse_visible(False)
 
     def setup(self):
@@ -37,11 +37,11 @@ class GameView(arcade.View):
 
         self.cashier = arcade.Sprite("assets/cashier/closed.png")
         self.cashier.center_y = self.player.center_y
-        self.cashier.center_x = constants.WIDTH * 6
+        self.cashier.center_x = self.window.w * 6
 
         map = arcade.tilemap.read_tmx("assets/map_real.tmx")
         self.platform_list = arcade.tilemap.process_layer(
-            map, "Platform", constants.SPRITE_SCALING_TILES)
+            map, "Platform", constants.SCALING_TILES)
 
         # Spatial hashing speeds time to find collision
 
@@ -266,15 +266,15 @@ class GameView(arcade.View):
         if self.player.center_x < left_boundary and self.view_left - (left_boundary - self.player.center_x) > 0:
             self.view_left -= left_boundary - self.player.center_x
             changed_viewport = True
-        right_boundary = self.view_left + constants.WIDTH - constants.VIEWPORT_MARGIN
-        if self.player.center_x > right_boundary and self.view_left + (self.player.center_x - right_boundary) + constants.WIDTH < constants.LEVEL_WIDTH:
+        right_boundary = self.view_left + self.window.w - constants.VIEWPORT_MARGIN
+        if self.player.center_x > right_boundary and self.view_left + (self.player.center_x - right_boundary) + self.window.w < constants.LEVEL_WIDTH:
             self.view_left += self.player.center_x - right_boundary
             changed_viewport = True
         if changed_viewport:
             self.view_left = int(self.view_left)
             # Scroll
             arcade.set_viewport(
-                self.view_left, constants.WIDTH + self.view_left, 0, constants.HEIGHT)
+                self.view_left, self.window.w + self.view_left, 0, self.window.h)
         if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
             if self.immune_for <= 0:
                 self.immune_for = 3
@@ -298,7 +298,7 @@ class GameView(arcade.View):
         arcade.start_render()
         arcade.draw_lrwh_rectangle_textured(
             0, 0,
-            constants.LEVEL_WIDTH, constants.HEIGHT,  # 100 x 9 level
+            constants.LEVEL_WIDTH, self.window.h,  # 100 x 9 level
             self.background)
         self.platform_list.draw()
         self.enemy_list.draw()
@@ -309,13 +309,13 @@ class GameView(arcade.View):
             "assets/amounts/toilet_paper_amount.png")
         scale = 1
         arcade.draw_scaled_texture_rectangle(
-            max(120, self.view_left + 70), constants.HEIGHT - 35, tp_amount, scale, 0)
+            max(120, self.view_left + 70), self.window.h - 35, tp_amount, scale, 0)
         score_text = f"{self.window.score}"
-        arcade.draw_text(score_text, max(94, self.view_left + 44), constants.HEIGHT - 50,
+        arcade.draw_text(score_text, max(94, self.view_left + 44), self.window.h - 50,
                          arcade.csscolor.BLACK, 18)
         if self.window.score < self.window.goal and arcade.check_for_collision(self.player, self.cashier):
-            arcade.draw_text("Come back with 15 items", self.view_left + constants.WIDTH / 2, constants.HEIGHT - 50,
+            arcade.draw_text("Come back with 15 items", self.view_left + self.window.w / 2, self.window.h - 50,
                              arcade.csscolor.CRIMSON, 24, anchor_x="center")
         elif self.window.score >= self.window.goal:
-            arcade.draw_text("Find the cashier to checkout", self.view_left + constants.WIDTH / 2, constants.HEIGHT - 50,
+            arcade.draw_text("Find the cashier to checkout", self.view_left + self.window.w / 2, self.window.h - 50,
                              arcade.csscolor.CRIMSON, 24, anchor_x="center")

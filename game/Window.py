@@ -1,15 +1,32 @@
 import arcade
 from game import constants, sounds
 
+WIDTH = 16 * constants.SPRITE_SIZE
+HEIGHT = 12 * constants.SPRITE_SIZE
+TITLE = "Grocery Run"
+
 
 class Window(arcade.Window):
+    def update_window(self):
+        l, r, b, t = arcade.get_viewport()
+        w, h = r - l, t - b
+        self.l = l
+        self.r = r
+        self.b = b
+        self.t = t
+        self.w = w
+        self.h = h
+
     def __init__(self):
-        super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
+        super().__init__(WIDTH, HEIGHT, TITLE)
+        self.update_window()
         self.reset_game()
         self.music_on = True
         self.fx_on = True
-
         sounds.music.play(volume=.03)
+
+    def on_resize(self, width, height):
+        self.update_window()
 
     def on_update(self, dt):
         # Loop sound
@@ -27,7 +44,7 @@ class Window(arcade.Window):
                 continue
             else:
                 TP = arcade.Sprite(
-                    "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
+                    "assets/items/toilet_paper.png", constants.SCALING_TILES / 2)
                 TP.center_x = x
                 TP.center_y = 200
                 self.item_list.append(TP)
