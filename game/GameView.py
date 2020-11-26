@@ -1,114 +1,5 @@
 import arcade
-from game import constants, entity, sounds
-
-
-class HomeView(arcade.View):
-    def on_show(self):
-        arcade.set_background_color(arcade.color.LIGHT_SKY_BLUE)
-        # Reset the viewport, necessary if we have a scrolling game
-        arcade.set_viewport(0, constants.WIDTH, 0, constants.HEIGHT)
-        self.window.set_mouse_visible(True)
-
-    def on_draw(self):
-        arcade.start_render()
-        logo = arcade.load_texture("assets/logo.png")
-        logo.draw_sized(constants.WIDTH / 2, constants.HEIGHT * 2 / 3,
-                        constants.WIDTH / 2, constants.HEIGHT / 2)
-        start_blank = arcade.load_texture("assets/normal_start.png")
-        start_blank.draw_sized(constants.WIDTH / 2, constants.HEIGHT * 1 / 5,
-                               constants.WIDTH / 4, constants.HEIGHT / 6)
-
-    def on_mouse_press(self, x, ywd, button, modifiers):
-        game_view = GameView()
-        game_view.setup()
-        self.window.show_view(game_view)
-
-
-class PauseView(arcade.View):
-    def __init__(self, game_view):
-        super().__init__()
-        self.game_view = game_view
-        self.window.set_mouse_visible(True)
-
-    def on_show(self):
-        pass
-
-    # TODO: Conver to mouse click
-    def on_draw(self):
-        self.game_view.on_draw()
-        l, r, b, t = self.window.get_viewport()
-        w = r - l
-        h = t - b
-        # Draw blue hue over screen
-        arcade.draw_lrtb_rectangle_filled(
-            left=l, right=r, top=t, bottom=b,
-            color=arcade.color.LIGHT_SKY_BLUE + (220, ))  # Concatenate 200 for transparency
-        infection = arcade.load_texture("assets/infection_symbol.png")
-        infection.draw_sized(l + w / 2, h *
-                             4 / 5, h / 4, h / 4)
-        arcade.draw_text("PAUSED", l + w/2, h * .55,
-                         arcade.color.BLACK, font_size=40, anchor_x="center")
-        arcade.draw_text("Press ESCAPE to return to the game", l + w/2,
-                         h * .45, arcade.color.BLACK, font_size=20, anchor_x="center")
-        arcade.draw_text("Press ENTER to exit", l + w/2,
-                         h * .35, arcade.color.BLACK, font_size=20, anchor_x="center")
-        arcade.draw_text("Press M to toggle music", l + w/2,
-                         h * .25, arcade.color.BLACK, font_size=20, anchor_x="center")
-        arcade.draw_text("Press F to toggle sound effects", l + w/2,
-                         h * .15, arcade.color.BLACK, font_size=20, anchor_x="center")
-
-    def on_key_press(self, key, modifiers):
-        if key == arcade.key.ESCAPE:
-            self.window.show_view(self.game_view)
-        elif key == arcade.key.ENTER:
-            self.window.reset_game()
-            start_view = HomeView()
-            self.window.show_view(start_view)
-        elif key == arcade.key.M:
-            if self.window.music_on:
-                self.window.music_on = False
-                sounds.music.stop()
-            else:
-                self.window.music_on = True
-        elif key == arcade.key.F:
-            self.window.fx_on = not self.window.fx_on
-
-
-class GameOverView(arcade.View):
-    def __init__(self):
-        super().__init__()
-        self.texture = arcade.load_texture("assets/game_over.gif")
-        arcade.set_viewport(0, constants.WIDTH, 0, constants.HEIGHT)
-        self.window.set_mouse_visible(True)
-
-    def on_draw(self):
-        arcade.start_render()
-        l, r, b, t = self.window.get_viewport()
-        self.texture.draw_sized(l + (r - l) / 2, constants.HEIGHT / 2,
-                                constants.WIDTH, constants.HEIGHT)
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.window.reset_game()
-        start_view = HomeView()
-        self.window.show_view(start_view)
-
-
-class GameWinView(arcade.View):
-    def on_show(self):
-        arcade.set_background_color(arcade.csscolor.DARK_SLATE_BLUE)
-        self.window.set_mouse_visible(True)
-
-    def on_draw(self):
-        arcade.start_render()
-        l, r, b, t = self.window.get_viewport()
-        arcade.draw_text("You win! Click to Play Again!", l + (r - l) / 2, constants.HEIGHT / 2,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.window.reset_game()
-        game_view = GameView()
-        game_view.setup()
-        self.window.show_view(game_view)
+from game import constants, entity, sounds, WinView, PauseView, LoseView
 
 
 class GameView(arcade.View):
@@ -295,7 +186,7 @@ class GameView(arcade.View):
                 f = (0, constants.PLAYER_JUMP_IMPULSE)
                 self.physics_engine.apply_impulse(self.player, f)
         elif key == arcade.key.ESCAPE:
-            pause_view = PauseView(self)
+            pause_view = PauseView.PauseView(self)
             self.window.show_view(pause_view)
 
     def on_key_release(self, key, modifiers):
@@ -316,7 +207,7 @@ class GameView(arcade.View):
                 "assets/cashier/open.png")[0]
         self.cashier.update()
         if arcade.check_for_collision(self.player, self.cashier) and self.window.score >= self.window.goal:
-            game_win = GameWinView()
+            game_win = WinView.WinView()
             self.window.show_view(game_win)
 
         for enemy in self.enemy_list:
@@ -392,7 +283,7 @@ class GameView(arcade.View):
                     sounds.grunt.play()
                 self.window.hits_left -= 1
                 if self.window.hits_left <= 0:
-                    view = GameOverView()
+                    view = LoseView.LoseView()
                     self.window.show_view(view)
                 else:
                     game_view = GameView()
@@ -428,36 +319,3 @@ class GameView(arcade.View):
         elif self.window.score >= self.window.goal:
             arcade.draw_text("Find the cashier to checkout", self.view_left + constants.WIDTH / 2, constants.HEIGHT - 50,
                              arcade.csscolor.CRIMSON, 24, anchor_x="center")
-
-
-class CustomWindow(arcade.Window):
-    def __init__(self):
-        super().__init__(constants.WIDTH, constants.HEIGHT, constants.TITLE)
-        self.reset_game()
-        self.music_on = True
-        self.fx_on = True
-
-        sounds.music.play(volume=.03)
-
-    def on_update(self, dt):
-        # Loop sound
-        if self.music_on and sounds.music.is_complete():
-            sounds.music.play(volume=.03)
-
-    # TODO: This should be associated with a level, not the window.
-    def reset_game(self):
-        self.hits_left = 4
-        self.item_list = arcade.SpriteList()
-        for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL_WIDTH / 20))):
-            if i == 2:
-                continue
-            elif i == 12:
-                continue
-            else:
-                TP = arcade.Sprite(
-                    "assets/items/toilet_paper.png", constants.SPRITE_SCALING_TILES / 2)
-                TP.center_x = x
-                TP.center_y = 200
-                self.item_list.append(TP)
-        self.score = 0
-        self.goal = 15
