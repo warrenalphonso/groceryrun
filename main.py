@@ -17,8 +17,10 @@ for i, x in enumerate(range(150, int(constants.LEVEL_WIDTH), int(constants.LEVEL
         item_list.append(TP)
 score = 0
 goal = 15
-sneeze = arcade.Sound("assets/sneeze.flac")
-music = arcade.Sound("assets/music.mp3")
+grunt = arcade.Sound("assets/sounds/grunt.mp3")
+jump = arcade.Sound("assets/sounds/jump.mp3")
+# sneeze = arcade.Sound("assets/sounds/sneeze.flac")
+music = arcade.Sound("assets/sounds/music.mp3")
 music.play(volume=.03)
 
 
@@ -286,6 +288,7 @@ class GameView(arcade.View):
             self.right_pressed = True
         elif key == arcade.key.UP or key == arcade.key.W:
             if self.physics_engine.is_on_ground(self.player):
+                jump.play()
                 f = (0, constants.PLAYER_JUMP_IMPULSE)
                 self.physics_engine.apply_impulse(self.player, f)
 
@@ -296,9 +299,9 @@ class GameView(arcade.View):
             self.right_pressed = False
 
     def on_update(self, dt):
-        # Loop sound 
+        # Loop sound
         if music.is_complete():
-            music.play()
+            music.play(volume=.03)
         if self.immune_for > 0:
             self.immune_for -= dt
         else:
@@ -377,7 +380,8 @@ class GameView(arcade.View):
         if len(arcade.check_for_collision_with_list(self.player, self.enemy_list)) > 0:
             if self.immune_for <= 0:
                 self.immune_for = 3
-                sneeze.play()
+                # sneeze.play()
+                grunt.play()
                 global hits_left
                 hits_left -= 1
                 if hits_left <= 0:
