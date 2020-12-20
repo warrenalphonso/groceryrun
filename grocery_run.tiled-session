@@ -1,0 +1,82 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "/Users/warren/github/Stellar-Arena/Terminal_Stasis.tmx",
+    "expandedProjectPaths": [
+        "assets",
+        "assets/platforms"
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "/Users/warren/github/Stellar-Arena/Terminal_Stasis.tmx": {
+            "scale": 0.5521875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 880.1358234295415,
+                "y": 641.0865874363328
+            }
+        },
+        "/Users/warren/github/Stellar-Arena/Terminal_Stasis.tmx#StellarTiles": {
+            "scaleInDock": 1
+        },
+        "assets/platforms/platform_light_single.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "assets/platforms/platform_shelf_single.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "assets/platforms/tile_floor.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "level_1_room_1.tmx": {
+            "scale": 0.28,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1571.428571428571,
+                "y": 639.2857142857141
+            }
+        },
+        "map_real.tmx": {
+            "scale": 0.05,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 4360,
+                "y": 2250
+            }
+        },
+        "map_real.tmx#tiles": {
+            "scaleInDock": 1
+        }
+    },
+    "map.height": 20,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 50,
+    "openFiles": [
+        "level_1_room_1.tmx",
+        "assets/platforms/platform_light_single.tsx",
+        "assets/platforms/platform_shelf_single.tsx",
+        "assets/platforms/tile_floor.tsx",
+        "/Users/warren/github/Stellar-Arena/Terminal_Stasis.tmx"
+    ],
+    "project": "grocery_run.tiled-project",
+    "recentFiles": [
+        "level_1_room_1.tmx",
+        "assets/platforms/platform_light_single.tsx",
+        "assets/platforms/platform_shelf_single.tsx",
+        "assets/platforms/tile_floor.tsx",
+        "/Users/warren/github/Stellar-Arena/Terminal_Stasis.tmx",
+        "map_real.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
+}

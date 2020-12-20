@@ -40,6 +40,7 @@ class GameView(arcade.View):
         self.cashier.center_x = self.window.w * 6
 
         map = arcade.tilemap.read_tmx("assets/map_real.tmx")
+        # map = arcade.tilemap.read_tmx("level_1_room_1.tmx")
         self.platform_list = arcade.tilemap.process_layer(
             map, "Platform", constants.SCALING_TILES)
 
