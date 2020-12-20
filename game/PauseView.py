@@ -1,6 +1,9 @@
 import arcade
 from game import sounds, HomeView
 
+slide_velocity = 10
+time = 0
+
 
 class PauseView(arcade.View):
     def __init__(self, game_view):
@@ -8,10 +11,7 @@ class PauseView(arcade.View):
         self.game_view = game_view
         self.window.set_mouse_visible(True)
 
-    def on_show(self):
-        pass
-
-    # TODO: Conver to mouse click
+    # TODO: Convert to mouse click
     def on_draw(self):
         self.game_view.on_draw()
         l, r, b, t, w, h = self.window.l, self.window.r, self.window.b, self.window.t, self.window.w, self.window.h
@@ -19,9 +19,13 @@ class PauseView(arcade.View):
         arcade.draw_lrtb_rectangle_filled(
             left=l, right=r, top=t, bottom=b,
             color=arcade.color.LIGHT_SKY_BLUE + (220, ))  # Concatenate 200 for transparency
+        # Draw infection symbol
         infection = arcade.load_texture("assets/infection_symbol.png")
         infection.draw_sized(l + w / 2, h *
                              4 / 5, h / 4, h / 4)
+        phone = arcade.load_texture("assets/cell-phone.png")
+        phone.draw_sized(l + w / 2, h *
+                         4 / 5, h / 4, h / 4)
         arcade.draw_text("PAUSED", l + w/2, h * .55,
                          arcade.color.BLACK, font_size=40, anchor_x="center")
         arcade.draw_text("Press ESCAPE to return to the game", l + w/2,
